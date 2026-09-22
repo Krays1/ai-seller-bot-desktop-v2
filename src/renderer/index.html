@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bot Desktop V2</title>
+  <link rel="stylesheet" href="./app.css">
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">AS</div>
+        <div>
+          <div class="brand-kicker" id="app-name">Bot Desktop V2</div>
+          <h1>Command Center v2</h1>
+        </div>
+      </div>
+      <div class="top-status">
+        <div class="pill"><span class="dot" id="dot-runtime"></span><div><small>App</small><strong id="runtime-label">…</strong></div></div>
+        <div class="pill" title="Zello multi-bot connections"><span class="dot" id="dot-zello"></span><div><small>Zello</small><strong id="zello-status">Disconnected</strong></div></div>
+        <div class="pill" title="Ollama brain (LLM)"><span class="dot" id="dot-brain"></span><div><small>Brain</small><strong id="brain-status">—</strong></div></div>
+        <div class="pill" title="Speech-to-text / transcription"><span class="dot" id="dot-stt"></span><div><small>Hear (STT)</small><strong id="stt-status">—</strong></div></div>
+        <div class="pill" title="OmniVoice text-to-speech"><span class="dot" id="dot-tts"></span><div><small>Voice (TTS)</small><strong id="tts-status">—</strong></div></div>
+      </div>
+      <div class="top-actions">
+        <button type="button" class="btn" id="btn-refresh-health" title="Probe Brain, STT, OmniVoice, Zello">Refresh</button>
+        <button type="button" class="btn primary" id="btn-connect">Connect bots</button>
+        <button type="button" class="btn danger" id="btn-disconnect" disabled>Disconnect</button>
+      </div>
+    </header>
+
+    <nav class="nav" aria-label="Main">
+      <button type="button" class="nav-btn is-active" data-view="live">Live</button>
+      <button type="button" class="nav-btn" data-view="roster">Roster</button>
+      <button type="button" class="nav-btn" data-view="channels">Channels</button>
+      <button type="button" class="nav-btn" data-view="engines">Engines</button>
+    </nav>
+
+    <main class="main">
+      <section class="view is-active" id="view-live" data-view="live">
+        <div class="live-grid">
+          <article class="panel live-heard">
+            <header class="panel-head"><h2>Heard</h2><span class="meta"><span id="live-mode">Listen</span> · <span id="live-speaker">No speaker</span></span></header>
+            <p class="live-copy" id="live-transcript">Waiting for speech…</p>
+          </article>
+          <article class="panel live-reply">
+            <header class="panel-head"><h2>Reply</h2><span class="meta" id="live-bot-state">Idle</span></header>
+            <p class="live-copy" id="live-response">No response yet</p>
+            <p class="live-error is-hidden" id="live-error"></p>
+          </article>
+          <article class="panel live-compose">
+            <header class="panel-head"><h2>Speak as bot</h2></header>
+            <div class="compose-row">
+              <select id="speak-as-bot"></select>
+              <textarea id="speak-text" rows="2" placeholder="Type a line, then Speak on channel (Ctrl+Enter)"></textarea>
+              <button type="button" class="btn primary" id="btn-speak-text">Speak on channel</button>
+            </div>
+          </article>
+          <article class="panel live-activity">
+            <header class="panel-head">
+              <h2>Activity</h2>
+              <span class="meta" id="activity-count">0</span>
+            </header>
+            <div class="activity-log" id="activity-log"></div>
+          </article>
+          <details class="panel live-diag">
+            <summary>Audio diagnostics</summary>
+            <div class="diag-grid" id="audio-diag">
+              <div><small>Pipeline</small><strong id="diag-pipeline">—</strong></div>
+              <div><small>Listen channel</small><strong id="diag-listen-channel">—</strong></div>
+              <div><small>Listen bot</small><strong id="diag-listen-bot">—</strong></div>
+              <div><small>Processing</small><strong id="diag-processing">No</strong></div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section class="view" id="view-roster" data-view="roster">
+        <div class="roster-toolbar">
+          <div class="toolbar-left">
+            <button type="button" class="btn" id="roster-enable-all">Join all</button>
+            <button type="button" class="btn" id="roster-disable-all">Leave all</button>
+            <button type="button" class="btn" id="roster-speak-all">Speak all</button>
+            <button type="button" class="btn" id="roster-mute-all">Mute speak</button>
+            <button type="button" class="btn primary" id="roster-save">Save roster</button>
+          </div>
+          <div class="toolbar-channel">
+            <label class="bulk-channel">
+              <span>Assign channel</span>
+              <select id="roster-bulk-channel"></select>
+            </label>
+            <button type="button" class="btn" id="roster-assign-channel-joined">To joined</button>
+            <button type="button" class="btn" id="roster-assign-channel-all">To all bots</button>
+          </div>
+          <p class="hint" id="roster-hint">Join = connect · Speak = free talk · Name = when called · <strong>Channel</strong> = pick per bot (blank = primary). Save, then Disconnect → Connect.</p>
+        </div>
+        <div class="roster-table-wrap">
+          <table class="roster-table">
+            <thead>
+              <tr>
+                <th>Join</th>
+                <th>Speak</th>
+                <th>Name</th>
+                <th>Bot</th>
+                <th>Channel</th>
+                <th>Voice</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="roster-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="view" id="view-channels" data-view="channels">
+        <div class="channels-layout">
+          <article class="panel">
+            <header class="panel-head"><h2>Your channels (Active)</h2></header>
+            <p class="hint" id="channels-hint">Channels you add appear here AND in Catalog. Then Reconnect bots.</p>
+            <div class="channel-list" id="channel-list"></div>
+            <div class="compose-row tight">
+              <input type="text" id="channel-add-input" placeholder="Exact Zello channel name">
+              <button type="button" class="btn primary" id="channel-add-btn">Add channel</button>
+            </div>
+            <label class="check channel-add-opts"><input type="checkbox" id="channel-add-assign" checked> Also put <strong>joined</strong> bots on this channel</label>
+            <label class="check channel-add-opts"><input type="checkbox" id="channel-add-primary"> Make this the primary channel</label>
+          </article>
+          <article class="panel">
+            <header class="panel-head"><h2>Assign &amp; reconnect</h2></header>
+            <p class="hint">Bots only move after reconnect. Use “Use for joined” on a channel row, or pick here.</p>
+            <label class="field">
+              <span class="field-label">Channel</span>
+              <select id="channel-assign-select"></select>
+            </label>
+            <div class="compose-row tight">
+              <button type="button" class="btn" id="channel-assign-joined">Joined bots → channel</button>
+              <button type="button" class="btn" id="channel-assign-all">All bots → channel</button>
+            </div>
+            <div class="compose-row tight" style="margin-top:10px">
+              <button type="button" class="btn primary" id="channels-reconnect">Reconnect bots now</button>
+              <button type="button" class="btn" id="channels-save">Save only</button>
+            </div>
+          </article>
+          <article class="panel channels-catalog">
+            <header class="panel-head"><h2>Catalog (all known channels)</h2></header>
+            <p class="hint">Imported + channels you add. “In use” = already in Active. “Use this” activates it for bots.</p>
+            <div class="channel-list muted" id="catalog-channel-list"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="view" id="view-engines" data-view="engines">
+        <div class="engines-grid">
+          <article class="panel">
+            <header class="panel-head"><h2>Brain (Ollama)</h2></header>
+            <label>Host mode
+              <select id="llm-host-mode">
+                <option value="this-pc">This PC</option>
+                <option value="other-pc">Other PC</option>
+                <option value="auto">Auto</option>
+              </select>
+            </label>
+            <label>This PC URL<input id="ollama-url-this" type="text"></label>
+            <label>Other PC URL<input id="ollama-url-other" type="text"></label>
+            <label>Model<input id="ollama-model" type="text"></label>
+            <div class="compose-row tight">
+              <button type="button" class="btn" id="btn-probe-brain">Probe brain</button>
+              <span class="meta" id="brain-probe-result">—</span>
+            </div>
+          </article>
+          <article class="panel">
+            <header class="panel-head"><h2>Speech</h2></header>
+            <label>STT URL<input id="stt-url" type="text"></label>
+            <label>OmniVoice URL<input id="omnivoice-url" type="text"></label>
+            <label>Default voice<input id="omnivoice-voice" type="text" list="voice-datalist"></label>
+            <datalist id="voice-datalist"></datalist>
+            <div class="compose-row tight">
+              <button type="button" class="btn" id="btn-probe-stt">Probe STT</button>
+              <button type="button" class="btn" id="btn-probe-tts">Probe OmniVoice</button>
+            </div>
+            <p class="meta" id="speech-probe-result">—</p>
+          </article>
+          <article class="panel engines-fight">
+            <header class="panel-head">
+              <h2>Fight &amp; chat</h2>
+              <span class="meta">How bots grab the button and talk after someone speaks</span>
+            </header>
+
+            <div class="fight-layout">
+              <section class="fight-section">
+                <h3>Who answers</h3>
+                <p class="hint">After a human talks, which bots race for the mic.</p>
+                <div class="fight-fields">
+                  <label class="field">
+                    <span class="field-label">Reply style</span>
+                    <select id="reply-mode">
+                      <option value="random">Random fight — pick fighters at random</option>
+                      <option value="roundRobin">Round robin — take turns</option>
+                      <option value="preferred">Preferred bot — favour one bot</option>
+                    </select>
+                  </label>
+                  <label class="field">
+                    <span class="field-label">Max fighters</span>
+                    <span class="field-help">How many bots line up each round</span>
+                    <input id="max-fighters" type="number" min="1" max="12">
+                  </label>
+                  <label class="field">
+                    <span class="field-label">Data cooldown (ms)</span>
+                    <span class="field-help">Wait after a bot finishes before the next can speak</span>
+                    <input id="cooldown-ms" type="number" min="0" max="60000" step="10">
+                  </label>
+                </div>
+              </section>
+
+              <section class="fight-section">
+                <h3>Tone</h3>
+                <p class="hint">Personality of replies on the radio.</p>
+                <div class="fight-fields">
+                  <label class="field field-wide">
+                    <span class="field-label">Chat flow</span>
+                    <select id="chat-mode">
+                      <option value="chat">Chat — normal conversation</option>
+                      <option value="banter">Banter — playful push-back</option>
+                      <option value="argument">Argument — strong disagreement</option>
+                      <option value="extreme">Extreme — hard argue / no soft close</option>
+                    </select>
+                  </label>
+                </div>
+              </section>
+
+              <section class="fight-section">
+                <h3>Timing</h3>
+                <p class="hint">How long humans and bots get to hold the channel.</p>
+                <div class="fight-fields">
+                  <label class="field">
+                    <span class="field-label">Max human talk (ms)</span>
+                    <span class="field-help">Cap a long human PTT so bots can cut in (20000 = 20s)</span>
+                    <input id="max-user-talk" type="number" min="0" step="1000">
+                  </label>
+                  <label class="field">
+                    <span class="field-label">Bot speak target (sec)</span>
+                    <span class="field-help">Aim for replies about this long</span>
+                    <input id="bot-speak-sec" type="number" min="1" max="60">
+                  </label>
+                </div>
+              </section>
+
+              <section class="fight-section fight-mode">
+                <h3>Channel mode</h3>
+                <p class="hint">Listening always transcribes into Heard. Auto reply is optional on top.</p>
+                <div class="mode-cards">
+                  <label class="mode-card" for="mode-listen">
+                    <input type="radio" name="channel-mode" id="mode-listen" value="listen">
+                    <span class="mode-card-body">
+                      <strong>Listen only</strong>
+                      <small>Transcribe everyone into Heard. Bots do not seize or answer (Speak-as still works).</small>
+                    </span>
+                  </label>
+                  <label class="mode-card" for="mode-reply">
+                    <input type="radio" name="channel-mode" id="mode-reply" value="reply">
+                    <span class="mode-card-body">
+                      <strong>Listen + auto reply</strong>
+                      <small>Transcribe, then bots fight for the button and answer.</small>
+                    </span>
+                  </label>
+                </div>
+              </section>
+
+              <section class="fight-section fight-toggles">
+                <h3>Behaviours</h3>
+                <div class="toggle-list">
+                  <label class="toggle" for="allow-peer-chat">
+                    <input type="checkbox" id="allow-peer-chat">
+                    <span class="toggle-text">
+                      <strong>Bots steal from each other</strong>
+                      <small>Another bot can snatch the button mid-fight</small>
+                    </span>
+                  </label>
+                  <label class="toggle" for="cut-in-capped">
+                    <input type="checkbox" id="cut-in-capped">
+                    <span class="toggle-text">
+                      <strong>Cut in when human talk is capped</strong>
+                      <small>Start seizing once max human talk time is hit</small>
+                    </span>
+                  </label>
+                  <label class="toggle" for="interrupt-reset">
+                    <input type="checkbox" id="interrupt-reset">
+                    <span class="toggle-text">
+                      <strong>Stop bot TX when a human keys up</strong>
+                      <small>Abort our transmit if someone else starts talking</small>
+                    </span>
+                  </label>
+                </div>
+              </section>
+            </div>
+
+            <div class="fight-actions">
+              <button type="button" class="btn primary" id="engines-save">Save engines</button>
+              <span class="meta" id="engines-save-hint"></span>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <aside class="drawer is-hidden" id="voice-drawer" aria-hidden="true">
+    <div class="drawer-backdrop" id="voice-drawer-backdrop"></div>
+    <div class="drawer-panel">
+      <header class="panel-head">
+        <h2>Pick voice</h2>
+        <button type="button" class="btn" id="voice-drawer-close">Close</button>
+      </header>
+      <input type="search" id="voice-drawer-filter" placeholder="Filter voices…">
+      <div class="voice-drawer-list" id="voice-drawer-list"></div>
+    </div>
+  </aside>
+
+  <script src="./ui/state.js"></script>
+  <script src="./ui/live.js"></script>
+  <script src="./ui/roster.js"></script>
+  <script src="./ui/channels.js"></script>
+  <script src="./ui/engines.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

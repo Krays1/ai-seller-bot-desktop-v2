@@ -1,0 +1,57 @@
+WAV vs BOTS compare — 2026-09-06T09:33:45.374Z
+Voices dir: E:/AI-Seller-Bot-Desktop/omnivoice voices
+WAVs: 47 | Bots: 36
+
+=== NEED ACCOUNT FOR THESE WAVS (14) ===
+  - beavis.wav
+  - german u boat.wav
+  - ghost.wav
+  - Guest Queer.wav
+  - Hitman.wav
+  - John Leslie.wav
+  - modgirl.wav
+  - moozlim nukes.wav
+  - Nimble.wav
+  - TANYA.wav
+  - Tommy.wav
+  - Wee Vik.wav
+  - wulliedunhill.wav
+  - xbacardicatx.wav
+
+=== WAVS ALREADY MATCHED (33) ===
+  - abby.wav -> AbbyTheFLY @AbbyTheFLY [abby.wav]
+  - Abraham.wav -> ZELLO+AI @ZELLO+AI [Abraham.wav] | ibraham. @ibraham. [Abraham.wav]
+  - Alex.wav -> Alex @Alextruckerr [Alex.wav]
+  - American Sarah.wav -> American Sarah @American Sarah [American Sarah.wav]
+  - Badger.wav -> DrunkBadger @DrunkBadger [Badger.wav]
+  - BBGand.wav -> BBGand @BBGand [BBGand.wav]
+  - bombayboy.wav -> bombayboy. @bombayboy. [bombayboy.wav]
+  - dean.wav -> DeanTheQueen @DeanTheQueen [dean.wav]
+  - dj huddersfield.wav -> dj huddersfield @dj huddersfieldisgay [dj huddersfield.wav]
+  - Eat my Hat.wav -> Dave-Ai @Dave-Ai [Eat my Hat.wav] | Boatman Mike @Boatman Mike [Eat my Hat.wav]
+  - fatfrank.wav -> FatFrank. @FatFrank. [fatfrank.wav]
+  - ford.wav -> ford @fordpowerr [ford.wav]
+  - fordn.wav -> ford @fordpowerr [ford.wav]
+  - FozCrack.wav -> FozCrack. @FozCrack.
+  - germanUbend.wav -> germanUbend @germanUbend [germanUbend.wav]
+  - goodguy.wav -> GoodGay. @GoodGay. [goodguy.wav]
+  - gorden.wav -> Gordon Moan A Lot @Gordon Moan A Lot [gorden.wav]
+  - Invisible.wav -> Invisible Lady. @Invisible Lady. [Invisible.wav]
+  - Joker.wav -> WheelchairJoker @WheelchairJoker [Joker.wav]
+  - Joyce Ann.wav -> JuicyJoyceann @JuicyJoyceann [Joyce Ann.wav]
+  - Kelz.wav -> Kelz @kelz not today [Kelz.wav]
+  - KRAFT.wav -> Krafty Dafty @Krafty Dafty [KRAFT.wav] | Krafty Dafty. @Krafty Dafty. [KRAFT.wav]
+  - Leanne44.wav -> Leanne.a. @Leanne.a. [Leanne44.wav]
+  - marvinIsBack.wav -> marvinIsBack @marvinIsBack [marvinIsBack.wav]
+  - redeyes.wav -> RedLies @RedLies [redeyes.wav]
+  - Scouse Mikey.wav -> SM-L9 @SM-L9 [Scouse Mikey.wav]
+  - Smokin Stacks.wav -> Smokin Stacks @Smokin Stacks1 [Smokin Stacks.wav]
+  - Stuart.wav -> Stuart..Carmichael.. @Stuart..Carmichael.. [Stuart.wav]
+  - sugar.wav -> SugarTits. @SugarTits. [sugar.wav]
+  - Tinny.wav -> Tinny @Tinnyman [Tinny.wav]
+  - Toon.wav -> Jcool72 @Jcool72 [Toon.wav]
+  - welshmark.wav -> Bot 4 @krays1.. [welshmark.wav] | welshmark @welshmark1 [welshmark.wav]
+  - ZAK.wav -> Ziggy.Ziggy @Ziggy.Ziggy [ZAK.wav]
+
+=== BOTS MISSING / BAD VOICE MAPPING (1) ===
+  - FozCrack. @FozCrack. voice=(empty)

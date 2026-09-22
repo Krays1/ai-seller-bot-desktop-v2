@@ -1,0 +1,29 @@
+node_modules/
+__pycache__/
+*.pyc
+dist/
+release/
+out/
+
+# Extra audio caches (not the bot voice WAVs). The named voice people stay in the repo.
+omnivoice voices/.desktop-voice-cache/
+omnivoice voices/.omnivoice-trim-cache/
+
+# Local Stable Diffusion install (junction), not part of the app
+stable-diffusion-webui-forge-main/
+
+logs/*
+!logs/.gitkeep
+
+.env
+.env.*
+!.env.example
+
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+.DS_Store
+Thumbs.db
+desktop.ini

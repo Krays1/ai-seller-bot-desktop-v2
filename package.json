@@ -1,0 +1,26 @@
+{
+    "name": "bot-desktop-v2",
+    "version": "0.2.0",
+    "description": "Bot Desktop V2 — Live/Roster/Channels/Engines UI",
+    "main": "src/main/main.js",
+    "scripts": {
+        "start": "electron .",
+        "dev": "electron .",
+        "import": "node tools/import-from-desktop.js",
+        "check": "node --check src/main/main.js && node --check src/main/preload.js && node --check src/renderer/app.js && node --check src/renderer/ui/state.js && node --check src/renderer/ui/live.js && node --check src/renderer/ui/roster.js && node --check src/renderer/ui/channels.js && node --check src/renderer/ui/engines.js"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "chess.js": "^1.4.0",
+        "electron": "^41.7.1",
+        "opusscript": "^0.1.1",
+        "sharp": "^0.35.4",
+        "ws": "^8.18.3"
+    },
+    "devDependencies": {
+        "concurrently": "^9.2.4",
+        "electron-builder": "^26.15.3",
+        "wait-on": "^9.1.0"
+    }
+}

@@ -1,0 +1,1090 @@
+/* =========================================================
+   FINAL RIGHT CONSOLE REBUILD V2B
+   ========================================================= */
+
+.final-right-console {
+  display: grid !important;
+  grid-template-rows:
+    minmax(0,1.06fr)
+    minmax(0,0.92fr)
+    auto !important;
+  gap: 9px !important;
+  min-height: 0;
+}
+
+.final-runtime-deck-v2 {
+  display: grid !important;
+  grid-template-columns:
+    minmax(0, 1fr) !important;
+  gap: 10px !important;
+  min-height: 0;
+  padding: 8px !important;
+}
+
+.final-vu-bank {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 7px 8px 8px !important;
+  border: 1px solid #3c4038 !important;
+  background:
+    linear-gradient(
+      180deg,
+      #1b1e1a,
+      #090b09
+    ) !important;
+}
+
+.final-vu-bank .meter-bank-label {
+  height: 13px;
+  margin-bottom: 5px;
+  color: #adb3aa;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  line-height: 13px;
+  text-align: center;
+}
+
+.final-vu-bank .dual-vu-row {
+  display: grid !important;
+  grid-template-rows: 1fr 1fr;
+  gap: 8px !important;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.final-vu-bank .premium-vu-unit {
+  display: grid;
+  grid-template-rows:
+    minmax(0,1fr)
+    17px;
+  min-height: 0;
+}
+
+.hoyt-vu-face {
+  position: relative;
+  height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden;
+  border: 2px solid #050605 !important;
+  border-radius: 4px !important;
+  background: #dabb79 !important;
+  box-shadow:
+    inset 0 0 0 1px #6c5737,
+    0 0 0 2px #34372f,
+    0 2px 5px rgba(0,0,0,0.68) !important;
+}
+
+.hoyt-vu-art {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.final-vu-caption {
+  color: #e0e2dc;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  line-height: 17px;
+  text-align: center;
+}
+
+.final-vu-bank .premium-vu-needle-wrap {
+  position: absolute;
+  z-index: 8;
+  left: 50%;
+  bottom: -1%;
+  width: 0;
+  height: 0;
+}
+
+.final-vu-bank .premium-vu-needle {
+  position: absolute;
+  left: -0.5px;
+  bottom: 0;
+  width: 1px;
+  height: 108px;
+  background: #902118;
+  box-shadow:
+    0 0 0.5px rgba(80,0,0,0.55);
+  transform-origin: 50% 100%;
+  transition: none !important;
+  will-change: transform;
+}
+
+.final-vu-bank .premium-vu-pivot {
+  position: absolute;
+  z-index: 9;
+  width: 13px;
+  height: 7px;
+  left: -6px;
+  top: -3px;
+  border: 1px solid #1b1c18;
+  border-radius: 50% 50% 35% 35%;
+  background:
+    linear-gradient(
+      180deg,
+      #777a72,
+      #383b34 45%,
+      #0e100e
+    );
+  box-shadow:
+    0 1px 2px rgba(0,0,0,0.72);
+}
+
+.final-vu-bank .hardware-online-label {
+  align-self: center;
+  margin-top: 6px;
+  padding: 2px 8px;
+  font-size: 7px;
+}
+
+.final-conversation-monitor {
+  display: grid;
+  grid-template-rows:
+    minmax(0,1fr)
+    21px;
+  min-width: 0;
+  padding: 6px;
+  border: 1px solid #4a4e45;
+  background:
+    linear-gradient(
+      180deg,
+      #343831,
+      #151814 7%,
+      #080a08
+    );
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.13),
+    0 2px 4px rgba(0,0,0,0.62);
+}
+
+.final-conversation-monitor .crt-bezel {
+  min-height: 0;
+  padding: 9px !important;
+  border-radius: 18px !important;
+  background:
+    linear-gradient(
+      180deg,
+      #141713,
+      #050705
+    ) !important;
+  box-shadow:
+    inset 0 0 0 2px #242822,
+    inset 0 0 20px #000 !important;
+}
+
+.final-conversation-monitor .conversation-crt {
+  height: 100%;
+  min-height: 0 !important;
+  padding: 14px 16px !important;
+  border-radius: 14px !important;
+  background:
+    radial-gradient(
+      ellipse at 50% 38%,
+      #062712 0%,
+      #03170a 58%,
+      #010804 100%
+    ) !important;
+  box-shadow:
+    inset 0 0 28px rgba(0,0,0,0.88),
+    inset 0 0 9px rgba(68,255,111,0.08) !important;
+}
+
+.final-conversation-monitor .crt-label {
+  color: #64ff85 !important;
+  font-size: 9px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.06em;
+}
+
+#voice-bot-speaker {
+  color: #ffffff !important;
+  font-size:
+    clamp(15px,1vw,20px) !important;
+  font-weight: 700;
+}
+
+#voice-bot-transcript,
+#voice-bot-response {
+  color: #71ff91 !important;
+  font-size:
+    clamp(13px,0.84vw,17px) !important;
+  font-weight: 600;
+  line-height: 1.48;
+  text-shadow:
+    0 0 4px rgba(85,255,125,0.20);
+}
+
+.final-audio-analyzer {
+  display: grid;
+  grid-template-columns:
+    28px 1fr;
+  grid-template-rows:
+    18px minmax(0,1fr) 16px;
+  min-width: 150px !important;
+  min-height: 0;
+  padding: 8px !important;
+  border: 1px solid #3c4038 !important;
+  background:
+    linear-gradient(
+      180deg,
+      #181b17,
+      #090b09
+    ) !important;
+}
+
+.final-audio-analyzer .analyzer-heading {
+  grid-column: 1 / 3;
+  color: #d9ddd6;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-align: center;
+}
+
+.final-audio-analyzer .analyzer-db-scale {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 6px 1px 22px;
+  color: #b0b5ad;
+  font-size: 8px;
+}
+
+.final-audio-analyzer .analyzer-columns {
+  display: grid;
+  grid-template-columns:
+    1fr 1fr;
+  gap: 10px !important;
+  min-height: 0;
+}
+
+.final-audio-analyzer .analyzer-channel {
+  display: grid;
+  grid-template-rows:
+    minmax(0,1fr)
+    18px;
+  min-height: 0;
+  text-align: center;
+}
+
+.final-audio-analyzer .led-stack {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: space-between;
+  min-height: 0 !important;
+  height: 100%;
+  padding: 5px !important;
+  gap: 3px !important;
+  border: 1px solid #272b25;
+  background: #050805 !important;
+}
+
+.final-audio-analyzer .led-stack span {
+  flex: 1 1 auto;
+  min-height: 5px;
+  max-height: 9px;
+  border-radius: 1px;
+}
+
+.final-audio-analyzer .analyzer-footer {
+  grid-column: 1 / 3;
+  color: #727970;
+  font-size: 6px;
+  letter-spacing: 0.12em;
+  text-align: center;
+}
+
+.final-lower-grid-v2 {
+  display: grid !important;
+  grid-template-columns:
+    minmax(0,1.52fr)
+    minmax(430px,1fr) !important;
+  gap: 9px !important;
+  min-height: 0;
+}
+
+.final-lower-grid-v2 .activity-panel,
+.final-lower-grid-v2 .hardware-monitor-panel {
+  min-height: 0;
+}
+
+.final-lower-grid-v2 .activity-crt-shell {
+  height: calc(100% - 42px);
+  min-height: 0;
+  padding: 6px;
+  border: 1px solid #41453d;
+  background:
+    linear-gradient(
+      180deg,
+      #2c302a,
+      #0d100d
+    );
+}
+
+.final-lower-grid-v2 .activity-crt-shell .crt-bezel {
+  height: 100%;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+.final-lower-grid-v2 .activity-crt {
+  height: 100%;
+  min-height: 0 !important;
+  background:
+    radial-gradient(
+      ellipse at 50% 40%,
+      #05220f,
+      #031208 60%,
+      #010704
+    ) !important;
+}
+
+.final-right-console .hardware-diagnostics-strip {
+  display: grid !important;
+  grid-template-columns:
+    1.05fr
+    0.72fr
+    0.78fr
+    0.72fr
+    0.95fr
+    1.55fr !important;
+  gap: 6px !important;
+  min-height: 52px;
+  padding: 6px 7px !important;
+}
+
+@media (max-height:850px) {
+
+  .final-runtime-deck-v2 {
+    gap: 7px !important;
+    padding: 6px !important;
+  }
+
+  .final-vu-bank .premium-vu-needle {
+    height: 76px;
+  }
+
+  #voice-bot-transcript,
+  #voice-bot-response {
+    font-size: 12px !important;
+  }
+
+}
+
+/* =========================================================
+   FINAL PROPORTION CORRECTION V1
+   Geometry only. Runtime/audio untouched.
+   ========================================================= */
+
+
+/* Top runtime: narrower VUs, wider analyzer, balanced CRT. */
+
+.final-runtime-deck-v2 {
+  grid-template-columns:
+    minmax(310px, 0.82fr)
+    minmax(500px, 1.38fr)
+    minmax(185px, 0.50fr) !important;
+
+  gap: 9px !important;
+}
+
+
+/* VU meters should look like physical panel meters,
+   not long horizontal banners. */
+
+.final-vu-bank {
+  min-width: 0;
+}
+
+.final-vu-bank .dual-vu-row {
+  gap: 7px !important;
+}
+
+.final-vu-bank .premium-vu-unit {
+  grid-template-rows:
+    minmax(112px, 1fr)
+    18px;
+}
+
+.hoyt-vu-face {
+  height: auto !important;
+
+  min-height: 112px !important;
+
+  aspect-ratio:
+    2.35 / 1;
+}
+
+
+/* Needle length now follows the corrected face height. */
+
+.final-vu-bank .premium-vu-needle {
+  height:
+    clamp(86px, 5vw, 102px);
+}
+
+
+/* Analyzer gets enough physical width to read as hardware. */
+
+.final-audio-analyzer {
+  min-width: 185px !important;
+
+  grid-template-columns:
+    32px minmax(0, 1fr);
+}
+
+.final-audio-analyzer .analyzer-columns {
+  gap: 13px !important;
+}
+
+.final-audio-analyzer .led-stack {
+  min-width: 34px;
+}
+
+
+/* Lower console proportions. */
+
+.final-lower-grid-v2 {
+  grid-template-columns:
+    minmax(0, 1.42fr)
+    minmax(440px, 1fr) !important;
+
+  align-items: stretch;
+}
+
+
+/* Make both lower modules actually fill their assigned row. */
+
+.final-lower-grid-v2 > .hardware-module {
+  display: grid !important;
+
+  grid-template-rows:
+    auto minmax(0, 1fr);
+
+  height: 100%;
+
+  min-height: 0;
+}
+
+
+/* Remove the old calculated height that caused the huge
+   empty area underneath the Live Activity CRT. */
+
+.final-lower-grid-v2 .activity-crt-shell {
+  height: auto !important;
+
+  min-height: 0;
+
+  box-sizing: border-box;
+}
+
+.final-lower-grid-v2 .activity-crt-shell,
+.final-lower-grid-v2 .activity-crt-shell .crt-bezel,
+.final-lower-grid-v2 .activity-crt {
+  width: 100%;
+
+  height: 100% !important;
+
+  min-height: 0 !important;
+
+  box-sizing: border-box;
+}
+
+
+/* Give the activity monitor useful vertical space. */
+
+.final-lower-grid-v2 .activity-crt {
+  min-height: 220px !important;
+}
+
+
+/* Hardware monitor fills its module too. */
+
+.final-lower-grid-v2 .system-led-console {
+  height: 100%;
+
+  min-height: 0;
+
+  box-sizing: border-box;
+}
+
+
+/* At Full HD, lock proportions close to the approved target. */
+
+@media (min-width: 1500px) and (min-height: 850px) {
+
+  .final-right-console {
+    grid-template-rows:
+      minmax(330px, 1.02fr)
+      minmax(300px, 0.94fr)
+      auto !important;
+  }
+
+  .final-runtime-deck-v2 {
+    grid-template-columns:
+      minmax(320px, 0.84fr)
+      minmax(510px, 1.38fr)
+      minmax(195px, 0.52fr) !important;
+  }
+
+  .hoyt-vu-face {
+    min-height: 118px !important;
+
+    aspect-ratio:
+      2.3 / 1;
+  }
+
+  .final-lower-grid-v2 .activity-crt {
+    min-height: 230px !important;
+  }
+
+}
+
+
+/* Keep smaller windows usable. */
+
+@media (max-height: 850px) {
+
+  .final-runtime-deck-v2 {
+    grid-template-columns:
+      minmax(280px, 0.84fr)
+      minmax(430px, 1.4fr)
+      minmax(165px, 0.48fr) !important;
+  }
+
+  .hoyt-vu-face {
+    min-height: 92px !important;
+  }
+
+  .final-lower-grid-v2 .activity-crt {
+    min-height: 170px !important;
+  }
+
+}
+
+/* =========================================================
+   RUNTIME VU FIT CORRECTION V1
+   ========================================================= */
+
+.final-right-console {
+  grid-template-rows:
+    minmax(365px, 1.12fr)
+    minmax(285px, 0.88fr)
+    auto !important;
+}
+
+.final-runtime-module {
+  min-height: 0;
+
+  overflow: hidden;
+}
+
+.final-runtime-deck-v2 {
+  height: 100%;
+
+  box-sizing: border-box;
+
+  align-items: stretch;
+}
+
+.final-vu-bank {
+  height: 100%;
+
+  min-height: 0;
+
+  box-sizing: border-box;
+}
+
+.final-vu-bank .dual-vu-row {
+  min-height: 0;
+
+  overflow: hidden;
+}
+
+.final-vu-bank .premium-vu-unit {
+  grid-template-rows:
+    minmax(100px, 1fr)
+    16px;
+
+  min-height: 0;
+}
+
+.hoyt-vu-face {
+  min-height: 100px !important;
+
+  max-height: 112px;
+
+  aspect-ratio: 2.32 / 1;
+}
+
+.final-vu-caption {
+  line-height: 16px;
+}
+
+.final-vu-bank .premium-vu-needle {
+  height: 94px;
+}
+
+.final-vu-bank .hardware-online-label {
+  margin-top: 4px;
+}
+
+
+/* Let the lower CRT continue filling its panel,
+   but give the runtime section priority. */
+
+.final-lower-grid-v2 .activity-crt {
+  min-height: 205px !important;
+}
+
+
+@media (min-width:1500px) and (min-height:850px) {
+
+  .final-right-console {
+    grid-template-rows:
+      minmax(370px, 1.14fr)
+      minmax(290px, 0.86fr)
+      auto !important;
+  }
+
+  .hoyt-vu-face {
+    min-height: 103px !important;
+
+    max-height: 114px;
+  }
+
+  .final-vu-bank .premium-vu-needle {
+    height: 97px;
+  }
+
+}
+
+/* =========================================================
+   DIGITAL VOICE MONITOR V1
+   Analog VU presentation removed.
+   Matches the rest of the hardware interface.
+   ========================================================= */
+
+.final-runtime-deck-v2 {
+  grid-template-columns:
+    minmax(300px,0.78fr)
+    minmax(540px,1.48fr)
+    minmax(185px,0.48fr) !important;
+}
+
+
+.digital-voice-monitor {
+  display: grid;
+
+  grid-template-rows:
+    19px
+    1fr
+    1fr
+    auto;
+
+  gap: 8px;
+
+  min-width: 0;
+
+  padding: 8px;
+
+  border:
+    1px solid #3c4038;
+
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255,255,255,0.016) 0,
+      rgba(255,255,255,0.016) 1px,
+      rgba(0,0,0,0.022) 1px,
+      rgba(0,0,0,0.022) 3px
+    ),
+    linear-gradient(
+      180deg,
+      #1b1e1a,
+      #090b09
+    );
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    inset 0 -1px 0 rgba(0,0,0,0.9);
+}
+
+
+.digital-voice-title {
+  color: #b7bdb4;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  font-size: 8px;
+
+  font-weight: 800;
+
+  letter-spacing: 0.18em;
+
+  text-align: center;
+}
+
+
+.digital-voice-channel {
+  display: grid;
+
+  grid-template-rows:
+    22px
+    minmax(0,1fr);
+
+  min-height: 0;
+
+  padding: 7px;
+
+  border:
+    1px solid #282d26;
+
+  background:
+    linear-gradient(
+      180deg,
+      #111510,
+      #060806
+    );
+
+  box-shadow:
+    inset 0 1px 3px rgba(0,0,0,0.7);
+}
+
+
+.digital-channel-head {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  color: #e7eae4;
+
+  font-size: 9px;
+
+  font-weight: 800;
+
+  letter-spacing: 0.12em;
+}
+
+
+.digital-channel-head strong {
+  color: #61ff83;
+
+  font-size: 7px;
+
+  letter-spacing: 0.10em;
+}
+
+
+.digital-meter-shell {
+  display: grid;
+
+  grid-template-rows:
+    15px
+    minmax(0,1fr);
+
+  min-height: 0;
+}
+
+
+.digital-meter-scale {
+  display: flex;
+
+  justify-content: space-between;
+
+  color: #969e95;
+
+  font-family:
+    Consolas,
+    monospace;
+
+  font-size: 7px;
+
+  line-height: 15px;
+}
+
+
+.digital-meter-track {
+  display: grid;
+
+  grid-template-columns:
+    repeat(20,1fr);
+
+  gap: 3px;
+
+  min-height: 18px;
+
+  padding: 5px;
+
+  border:
+    1px solid #20251f;
+
+  background:
+    #040704;
+}
+
+
+.digital-meter-track span {
+  min-width: 0;
+
+  border-radius: 1px;
+
+  background:
+    #102218;
+
+  box-shadow:
+    inset 0 0 2px rgba(0,0,0,0.8);
+}
+
+
+.digital-meter-track span:nth-child(n+1):nth-child(-n+12) {
+  background:
+    #153421;
+}
+
+
+.digital-meter-track span:nth-child(n+13):nth-child(-n+17) {
+  background:
+    #3c3a18;
+}
+
+
+.digital-meter-track span:nth-child(n+18) {
+  background:
+    #401713;
+}
+
+
+.digital-voice-monitor .hardware-online-label {
+  justify-self: center;
+
+  margin-top: 1px;
+}
+
+
+/* Runtime still expects these IDs.
+   They remain present but are no longer visual controls. */
+
+.removed-vu-runtime-hooks {
+  position: absolute;
+
+  width: 0;
+  height: 0;
+
+  overflow: hidden;
+
+  opacity: 0;
+
+  pointer-events: none;
+}
+
+
+@media (min-width:1500px) and (min-height:850px) {
+
+  .final-runtime-deck-v2 {
+    grid-template-columns:
+      minmax(310px,0.80fr)
+      minmax(550px,1.50fr)
+      minmax(190px,0.50fr) !important;
+  }
+
+}
+
+/* ============================================================
+   CUSTOM DARK VOICE DROPDOWN V1
+   ============================================================ */
+
+.voice-select-row {
+  position: relative;
+  align-items: stretch;
+}
+
+.custom-voice-select {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  z-index: 40;
+}
+
+.voice-native-select {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.custom-voice-select-button {
+  width: 100%;
+  min-height: 31px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 9px;
+  padding: 0 9px;
+  border: 1px solid #35453d;
+  border-radius: 2px;
+  background:
+    linear-gradient(
+      180deg,
+      #17201c,
+      #0c120f
+    );
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.05),
+    inset 0 -1px 0 rgba(0,0,0,.85);
+  color: #d7e2db;
+  font: inherit;
+  font-size: 11px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.custom-voice-select-button:hover,
+.custom-voice-select.is-open
+.custom-voice-select-button {
+  border-color: #60766a;
+  background:
+    linear-gradient(
+      180deg,
+      #1d2923,
+      #0d1611
+    );
+}
+
+.custom-voice-select-value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.custom-voice-select-chevron {
+  flex: 0 0 auto;
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid #9eb4a7;
+  transition: transform 120ms ease;
+}
+
+.custom-voice-select.is-open
+.custom-voice-select-chevron {
+  transform: rotate(180deg);
+}
+
+.custom-voice-select-menu {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(100% + 4px);
+  z-index: 9999;
+  max-height: 360px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 4px;
+  border: 1px solid #43564c;
+  border-radius: 2px;
+  background:
+    linear-gradient(
+      180deg,
+      #121b17,
+      #070c09
+    );
+  box-shadow:
+    0 12px 30px rgba(0,0,0,.9),
+    inset 0 1px 0 rgba(255,255,255,.04);
+}
+
+.custom-voice-select-menu[hidden] {
+  display: none !important;
+}
+
+.custom-voice-select-option {
+  display: block;
+  width: 100%;
+  padding: 7px 9px;
+  border: 0;
+  border-bottom:
+    1px solid rgba(100,125,110,.12);
+  background: transparent;
+  color: #b9cbc0;
+  font: inherit;
+  font-size: 10px;
+  line-height: 1.25;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.custom-voice-select-option:hover,
+.custom-voice-select-option:focus-visible {
+  outline: none;
+  background: #1b2b23;
+  color: #f0fff5;
+}
+
+.custom-voice-select-option.is-selected {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(46,107,73,.55),
+      rgba(25,58,40,.28)
+    );
+  color: #dbffe8;
+  box-shadow:
+    inset 2px 0 0 #74bf8e;
+}
+
+.custom-voice-select-menu::-webkit-scrollbar {
+  width: 9px;
+}
+
+.custom-voice-select-menu::-webkit-scrollbar-track {
+  background: #070c09;
+}
+
+.custom-voice-select-menu::-webkit-scrollbar-thumb {
+  border: 2px solid #070c09;
+  border-radius: 8px;
+  background: #405348;
+}
+
+.custom-voice-select-menu::-webkit-scrollbar-thumb:hover {
+  background: #587064;
+}
+/* Conversation-only runtime (VU meters removed). */
+.final-runtime-deck-no-vu,
+.final-runtime-deck-v2.final-runtime-deck-no-vu {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+@media (min-width: 1500px) and (min-height: 850px) {
+  .final-runtime-deck-no-vu,
+  .final-runtime-deck-v2.final-runtime-deck-no-vu {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+
+@media (max-height: 850px) {
+  .final-runtime-deck-no-vu,
+  .final-runtime-deck-v2.final-runtime-deck-no-vu {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}

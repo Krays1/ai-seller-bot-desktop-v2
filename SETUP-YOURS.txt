@@ -1,0 +1,22 @@
+# AI-Seller Desktop v2 on your PC
+
+## Start
+**START-ALL.bat** (Ollama running)
+
+Settings: `%APPDATA%\ai-seller-bot-desktop-v2` (separate from v1)
+
+## Multi-bot fight
+- **Roster** — tick Join / Speak / Name + voices → **Save roster** → **Connect bots**
+- After someone talks, **2–5 bots** (Engines → Max fighters) randomly line up and **fight for the button**
+- Bots also try to **steal the button from each other**
+- Who answers: Fight (random) on **Engines** recommended
+
+## Talk as bot (typed)
+1. **Live** → Speak as dropdown — pick which bot/voice
+2. Type message
+3. **Speak on channel** (or Ctrl+Enter)
+
+They wait if the button is busy, then grab it.
+
+## Layout
+Live · Roster · Channels · Engines — no CRM tab in v2.

@@ -1,0 +1,390 @@
+{
+  "importedAt": "2026-09-19T07:44:27.077Z",
+  "source": "C:\\Users\\krays1\\AppData\\Roaming\\zello-bot-desktop\\zello-bot-data\\desktop-config.json",
+  "wallRoot": "E:\\zello-wall-for-friend",
+  "voicesDir": "E:\\AI-Seller-Bot-Desktop-v2\\omnivoice voices",
+  "omnivoiceUrl": "http://127.0.0.1:8002",
+  "ollamaUrlThisPc": "http://127.0.0.1:11434",
+  "ollamaUrlOtherPc": "http://192.168.1.92:11434",
+  "llmHostMode": "this-pc",
+  "model": "gemma3:4b",
+  "accounts": [
+    {
+      "id": "4",
+      "label": "Bot 4",
+      "username": "krays1..",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002YTNKaGVYTXhMaTQ2TVEuRDJRd3MyUkFlQ2s0bWV4ci1rM0g2TlJpeGdNeFNKNVQ3QUo4MFJRb28wYyIsImV4cCI6MTc5MDM1MzAwNywiYXpwIjoiZGV2In0.IkxyGBbud8O1L-hO_M-lvZH18UeissZomSI-8Hx_8JTtcR0hY5JB1b9TuWpxwM4b0GvaPE7ovKNAMnxdBJlfcEysIPoryILcgM5dyHZfmGS1N8e_kQxU8pD0tjspxJRz1wDVbfyg2qKJC0afnxBKDbHs4QHJA-2P4tJkvciLk6azlKYvQwjzS4W8DR5yvKeZmXIfD10CVDc4N0hSTjTltB9PMdmp9pMMevNfHnR9ceo1BTNGYmS90VB0XrjRbzNVSGeBgFHQ-a3bmUgVNrzJ9Sl8Mi3LUsLdLs7ULhGiM2AmBCrQD79Kv5SQcr_yflITOJ_mc1MjDXLz_1z4ULIXlQ"
+    },
+    {
+      "id": "5",
+      "label": "ZELLO+AI",
+      "username": "ZELLO+AI",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002V2tWTVRFOHJRVWs2TVEuMnJlWUVUTmIyMGxfQVZtekg0aW9OODRYTjBTa19BNVFvOHNfeDFBbnZ1USIsImV4cCI6MTc5MDM1MzE1MSwiYXpwIjoiZGV2In0.DOVTn5vXKMuYuP_I1Q9i0hxYheuDC4S6Xa1xOk8S3qcVpKh1LJiyoOhZj34-eJh7l_ymBiqCFpOCv4_rKNIrXixTKQGOJ9X7QmPhbskvMLMChwhXsHbvgWoAwhcGSiLA-zq92bM7io-UArE2wligW6BSkv9Onweu8trYNGuLmvuNEbZk3OEihm2VYs9vP6dMUwPWR91KzKevV526TBqnifg8REquICSV6AZzLBQ3YTRWgg4MDd-Votqozui0dNGhXRxM5woY_rd5w_ia2Zjtwnkn1WqFXUAR1Z_D8UDuFc5HFIJYhCXlUWSrYPLtXYpUUfN95FfihqtQCEZ9dN_LJw"
+    },
+    {
+      "id": "7",
+      "label": "SM-L9",
+      "username": "SM-L9",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002VTAwdFREazZNUS4tclRabjhjNk9nZXFvT1Jvb1VZQnFybUs0bXVpRzdMVkZTcmdqYk9uODJZIiwiZXhwIjoxNzkwMzUyNzg1LCJhenAiOiJkZXYifQ.DtVPd9zlGoTWaox42JRIv1Jabb65vvenuJnb-iW1EORqA0t_2vl1eG68IlFFGvQuzdfD_qakPR41RzXDvre5W7IcQjC9quNdIPgLvlxfO6VWTrZAXpHlHjnC0zgaaRvhH90bqvncmh6S_bXGx7glDjwyHZQ1WVYmYMVflqNul9a5Fbj3X_TlOU3vSN8JwuHn4422l94ny_okCfwiaYabVXdK9xbKDSF-2u88vAnKYyBDHSYAPc51DnNDTCixPP4iF-cN03_b11hr6uVTPPdHmhPPvrDzrCHd8HfbLP7bArAOivq6-Qd9qXDiwHm3RmhCO71BY22vD_M2GMUumEidww"
+    },
+    {
+      "id": "13",
+      "label": "Dave-Ai",
+      "username": "Dave-Ai",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002UkdGMlpTMUJhVG94LnRCOXVQRUlfa1dqa2Y1ZU4ydjZVVGYybndRQmIteVIwYVNfLW1NbVFXUjgiLCJleHAiOjE3OTA5NjkxMDMsImF6cCI6ImRldiJ9.m06_lwmjpbNHeARdDtCnnAzQcH9-acTL7RO7gFJlJpIUSu1Yx-tCGHDBF71h1_n5txgxuSbTY5Z1A0QVl-org4HI90SvFzdmADqGdAHsO3NIFHqwRkG7mO5gu9wQ95Wp0Xbf5rAgbhTSM1dW9Va4WgXk-9vkbWsX5umXERVbFtnuutCPHeETcsihMZmsgnVqus6pTJnvLyAo3ZUafeo0OtVf3aNgnvMIuiBBhFO1CvcgnczlEzMdTEQTc4KFGOdgexafgRsIPdWUwDPoy3sdiQSUCQ0mL5hR52vbqaLdsss6xqzZvCEAFYoLicnoEupRNpI7ElbzuZftbgXUsNEItA"
+    },
+    {
+      "id": "14",
+      "label": "AbbyTheFLY",
+      "username": "AbbyTheFLY",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002UVdKaWVWUm9aVVpzZVRveC4tZWlYc2RqVnNySU03MEZSLXcwQXIxSDduU0JLaXlwbVZWVndDTTJoZlAwIiwiZXhwIjoxNzkwOTcwNDI5LCJhenAiOiJkZXYifQ.RdIxODMw0xHEX47mU3I07XbNHvDg52XOdktN8jh6tZJ-LMI5cIWG5iceo87uUbzRbFxdD_p2SySKuHu0NnmXK42yxV6nW2GrejxY_jyS0mAFFA2HyLU94Mc6citd6N_RrCmimHzTzrRCADknYjm09I2NmW3mD77FiGyWF7EdjLZCXa3HVsgThSW-W0rNnQ9PU6TuTGBPzlZdFNdi5VHv5NB0z_TEu62rh_Eg9i4MCpjUCgkdOiAethwfUb2Zf5cE4ZzgmX57hPlMqqV3uCOPecffhd4Hknx3fWPgXvURl7SCFfhfLgfRQlNR-1jWBWUo_wTgihQRyicwf5pUfTxsWg"
+    },
+    {
+      "id": "15",
+      "label": "DrunkBadger",
+      "username": "DrunkBadger",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002UkhKMWJtdENZV1JuWlhJNk1RLkRtUGZnbmNCSklmVFZnSUZXYnAybDFVOVIwdC12c1ZIUGgwWGdWNlNaZ28iLCJleHAiOjE3OTA5NzA2OTcsImF6cCI6ImRldiJ9.LN79uWILantYpBhsOPsj9NR1cb3KdQxgk6w4PsOHJqlmKsf48WgsQDbaY37Lzs9v0deLNNTo0rrR3aOac3dWnN8SxZXZzbL0BwxAIN59Gi_9cI3iIYFES0BNGDP-VJAMjmEkd-ka1vwDV3mwITXXEoBcok12Q8hoWIguxxMlzpEliQbhHsQICzcLrhffpnIkFYqI638ksMg_QWUKellRj2tx6mRrmDV2PCW4iVxk9z1TipczhMZPfcI90vPbENbiVA2yJMgjN9f-kIcuT0L8GCKAMNBKk7uEXAEo6UchXmWpSQnx0TO0bkg5wsKEs8jQSmtnmKLZqeL5KJyRItjLxw"
+    },
+    {
+      "id": "16",
+      "label": "ibraham.",
+      "username": "ibraham.",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002YVdKeVlXaGhiUzQ2TVEuLUJBV201cUsyZll6bEl0MVJFVnljZV9BSWVzaldXWkVPbkxpX3JiSF9KcyIsImV4cCI6MTc5MDk3MDg0NiwiYXpwIjoiZGV2In0.GCdyM1CKlpx9RjRFeA6wZHaqArF7QQz5ZE8ZRySvUg6VrOgF6543UclVOcBBP_idSFgkqlWrcW1CrOUYbrApFHar8rALUxrJrcZiyo8hSSpu4tjCx3v52DfnDFNeoU9bGZmIIXjGfrfydGg5muf4jpL2ZmujoPlCGir7qdlFJT8AgII0fYpr5pmfQnL-XEXfzqauLZuzrZulGiiJslKqETf7vdrDI3Mp13JatBlZMd6NjOeLfm09HW0Foy7WFwrJa5LwZ244JNwW8FHhtRdcdTpYwyx1jC9NGg6O9BeASEZhmY7WFRwU3SwLuUQOT-uD3WSI2ELw0u7BcMfweMdgCw"
+    },
+    {
+      "id": "17",
+      "label": "Boatman Mike",
+      "username": "Boatman Mike",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002UW05aGRHMWhiaUJOYVd0bE9qRS5GeFBvS2FYUjJMUkNuVHd4aXhzX3MzT0l4Q2RQX28wU290cFppRTkzU2xzIiwiZXhwIjoxNzkxMDA4MTc1LCJhenAiOiJkZXYifQ.YPbxFscXQJRUK9Hz6Clfdxh2gTkUnxsYiQxpUTrnJvnRwVk4EgVMIr6y1pOZ9A3mhkbRumb7U5VHiSVq3bZx_ZIwkedvBf97FcfpcJqKw8HSc2_A8i4mhAaL2y1snCd94Na8b12tqpxnbTF0XvRJqB8ZgRg9kjL4XJo_LyQPvzFTIEOlSdsEGAiWncfzvqEN7_ecjx1_fLnesUj50KKkvVruSW8LtAKJcSqxr1JCnexM651V34KnzOSsbixdqfeVygauqGaURuJW_1V3VKwTfrmT2cAtM2Q2wROprXXu6YSY3-FJ75QNWKuPlb6D9z5fLfpXFdjyhXw5FE_CqhaCiw"
+    },
+    {
+      "id": "18",
+      "label": "JuicyJoyceann",
+      "username": "JuicyJoyceann",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002U25WcFkzbEtiM2xqWldGdWJqb3guRjQzZC14WUxBVF9UamRybWc3Y0tGamtDT0RISTZlSFpRVmpSWGE0UlFrTSIsImV4cCI6MTc5MTAwODMxNSwiYXpwIjoiZGV2In0.BXokOJcT1LVeE2PijdcQrlORIoru26XKYQPYJ0rgXpatyuZdicNGZADH9J-_W4IaCadPY5qukMjTbHKtefYjh8rQikTj6a_GMXAuD1htHMAHrF3S7pgpiBcFoVNkqZqkJ4HCEhQ4fqp3j1K_3K4VMWKMoZjyiqqtPmTFq8_DOFSCecdC5GyfhgWXn1cTkg3v_md2bwPtcQAlAMVso2qnf8ENsGMgLWx1SAVqJ3gTWcNyvRVN_9Bwf0dF07Yq-TiKiyNbIclWatihbCD5pV9q0gu63Sw_j81SuA8_yasN9fg8jbbMTY2FNfa42_Gk35XQ493btj7QEfYKRIvceP5fTA"
+    },
+    {
+      "id": "19",
+      "label": "WheelchairJoker",
+      "username": "WheelchairJoker",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002VjJobFpXeGphR0ZwY2twdmEyVnlPakUuSTIxVS03WjVWVG9Uby1YRjhQc0l4aW8wWk5Sb2QtQ3JINDk4T2hDQ0JoSSIsImV4cCI6MTc5MTAwODQ0NCwiYXpwIjoiZGV2In0.nX8Re4SCLT2tQWrjV6ik-4JkFhtVwgRFbVKapjsuECG6Qaslyt-kUSINqLVMJuZTehJfNlrMIFE7fUN7ZJ-vbYCpdWdcjzpiz6wrXwUxscMKjiZ-Ri02m9Pqtk6GLD5gLXi3eDJxqa25caOhejr-a-9eJgFgf6Q1uW35w6m8u3wILkCbw9Glf244pw5baX89F5Jmuw6BqB6i2pBRZQhvAGU0Wt40cpbiybw1agMjJSEI2kQUgs0mgwfx75FF2LPjuXSTAbpJCQA7L8rbB9gXsJaT-5MSvtGItBSUrlZ02vznmFLTVibuIYuAfvPlouoQBV-CDlsgRLv8Uj8d-gwfvQ"
+    },
+    {
+      "id": "20",
+      "label": "DeanTheQueen",
+      "username": "DeanTheQueen",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002VjJobFpXeGphR0ZwY2twdmEyVnlPakUuSTIxVS03WjVWVG9Uby1YRjhQc0l4aW8wWk5Sb2QtQ3JINDk4T2hDQ0JoSSIsImV4cCI6MTc5MTAwODQ0NCwiYXpwIjoiZGV2In0.nX8Re4SCLT2tQWrjV6ik-4JkFhtVwgRFbVKapjsuECG6Qaslyt-kUSINqLVMJuZTehJfNlrMIFE7fUN7ZJ-vbYCpdWdcjzpiz6wrXwUxscMKjiZ-Ri02m9Pqtk6GLD5gLXi3eDJxqa25caOhejr-a-9eJgFgf6Q1uW35w6m8u3wILkCbw9Glf244pw5baX89F5Jmuw6BqB6i2pBRZQhvAGU0Wt40cpbiybw1agMjJSEI2kQUgs0mgwfx75FF2LPjuXSTAbpJCQA7L8rbB9gXsJaT-5MSvtGItBSUrlZ02vznmFLTVibuIYuAfvPlouoQBV-CDlsgRLv8Uj8d-gwfvQ"
+    },
+    {
+      "id": "21",
+      "label": "GoodGay.",
+      "username": "GoodGay.",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002UjI5dlpFZGhlUzQ2TVEuMWFWS3RGQUp0VUgyb3FWTHNGRWJPanVXempTWUlIaUh1d21VbVFVbHZSbyIsImV4cCI6MTc5MTAwODY1NCwiYXpwIjoiZGV2In0.syQJiWE8zf00Ta6ioXD9hwP1JW5VgfT0IkkjFSKrPBvEdEo6hg2ooeuS1P_A5rea18S_AH_FRQvhxoyw4PEXiQT_NrDYTCvXZfX3eYPzIFoG-9WrajabltWUb5oIJEpZaJ__k5QaVpO_bRxv--YbEwA2Mh7WXqw8hyPNMbxVUIWWKaycQw71Hgi-sDgwYYZ4SbadlWfY3W8Sml8SP_-NMNZyjGZVoQJBFbDjoyKu9che8WmnkHCL2giMRnoqr54Tk14dOLuBPxTZQ74MKhXNJCD8lbk2_Bu_aycF5r3Eo_Ougwi6HPizpURlv2PBv6RVq3c1ijQ7QY6dwjPXquw4WQ"
+    },
+    {
+      "id": "22",
+      "label": "SugarTits.",
+      "username": "SugarTits.",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002VTNWbllYSlVhWFJ6TGpveC5UTXVTYzNUTWgwNkJFZHdDd2pfdHNlemxQWnplX29nUEV5dHJzd2w3RkhVIiwiZXhwIjoxNzkxMDA4NzU1LCJhenAiOiJkZXYifQ.NF9l3UpBvylytjC4XtGbTDEsBTv6iHPehGzZuLtc-KzZP7CsOXjW3Io2Kw7xnY_OgZmdYuXS-9vi6DdLj3SMWQUkYe8pkvCF3SMHSZLimnmPNajbExKszWUAMBq4OkwD8zvLZMzs7YSCw4j-rXj8qHY9SnVhYT70wkXmJDAXGKf40J47ddOFtVtomJjRc5324owjHaDGJ2fFbSe29-YZbHWEizPoB5HHLBGBAwy3Mx0sjWEeer02-LnQk19rdLrdW7MXkGtNo4obEbsLoX3-h14GYugDtVYAsTs-C6kA4ivrE3mD3w3sUHhES59vIzChM2aSD2L2itzqUdW4sKiqJg"
+    },
+    {
+      "id": "23",
+      "label": "Krafty Dafty",
+      "username": "Krafty Dafty",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002UzNKaFpuUjVJRVJoWm5SNU9qRS43M3Q3QjFldkJUemZkTXJrZlZjTUNKaVJXZWY1YnZDRHpWNjQwb213ajRjIiwiZXhwIjoxNzkxMDQwMjg2LCJhenAiOiJkZXYifQ.Gh18nrzkwORIQWlym3sR_HwhkKND7X08iSBMWvULJaSiDgXfrm2NJcPvoCGcvzyTmygF0wl2s5oqcMDF6hGtMQF6KczlhwPj9ee2s_cPep6jcrQMYEON0gj33CMlZfqSN2756EnJ5Sr5uVU_HGB-FrnENchhfTzWB6a9n9RbCv59hAQaFDlaD6XJcdMxLxulA3J99fX9g8lq6nSAsHbxAp41pE1YfcUvhNbdNV3aZYsMT-o5rLGBfqV-q6Jd-EvMo9C720jTTxLSzJcIs7lbUDIBzV0pvNJmEAzprn9Vj_qVgoOB-bmAZCHtewENjJNDvj8sHl9NIjdznEIydfVMkA"
+    },
+    {
+      "id": "24",
+      "label": "Gordon Moan A Lot",
+      "username": "Gordon Moan A Lot",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002UjI5eVpHOXVJRTF2WVc0Z1FTQk1iM1E2TVEuMGdobEg2WlhvRi12RzhiWmU2bW9SWGtBWWpzSXQ4WU1GTXBMU0VkMVAxbyIsImV4cCI6MTc5MTA0MTQ0NiwiYXpwIjoiZGV2In0.jrEha6B0xftV8CSIfpOV9MbCMNJpafOR7bBREANwK_GGzvnGcI1fZjWgGfqADG02Yp7uvhJyX_DRGukrRX5Mljqqr1A0BTxnjR6tI35-xtvGgRFXaxouD5QyhLKN9x7n6yS9NoNgj_TZJXaiepGiGg7goI0pW3e2Y5fVITyvCLMRiQ1SNxMbPHdQ-FaXPlTZy_D9AXU1Y3haa5Pt0moxbX7XYpLPYruwbYBN4usR2WURY0CCfhaNqJS0K4rojVkPZ3PagCUBgvS1oiANQ2m8aYcZGAlA9w1EaQPw93j9H199jrKVr7D1V-7joYMdPGTtoNZXyWexZ4fWHS5E31LAUg"
+    },
+    {
+      "id": "25",
+      "label": "Krafty Dafty.",
+      "username": "Krafty Dafty.",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002UzNKaFpuUjVJRVJoWm5SNUxqb3guR2c1TW40czBiMkI5YkNZRnFPa0RaY3FoLWE1SVctTnhFRGFZNTNVbFdGMCIsImV4cCI6MTc5MTA0MTU5NSwiYXpwIjoiZGV2In0.XTxtkzJjI-vd2_AWdNioKCMKwUEdoilmk4a2AaR0EjSvw0ss4MpbbBFFF-l8lix8WCQpgr9bSUzuEQtm7gRv44W4jC07AiCbEHURLO6O69kXP87dg1PFtYg_oYQYWCtWU9PKahybo6-SjEn4FA7M-HB6VBlWxncp2Qol5LPDzab6gea7IjhZjVPGLZkVEDrBn0LQzyhzVHgX-HbQjNHzFlIuMpilrAQJu7-lMTfeM0HsYa6A-5QvN1N5BcWBggo7_riEAyLLlQp4lqMvshMsPAsFpc64be8B4I619jIzygeB_PIUVD2iCZtI8oLMx5CYv9Q0gD9GbaD3pZWKm5Ppjg"
+    },
+    {
+      "id": "26",
+      "label": "Invisible Lady.",
+      "username": "Invisible Lady.",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002U1c1MmFYTnBZbXhsSUV4aFpIa3VPakUuV2gxSllKczhrclFSRFlmb1h3MUN4OXBEbjJKX2g2dVZCcVBtVmZDYkpTVSIsImV4cCI6MTc5MTA0MjAxNywiYXpwIjoiZGV2In0.t-mOVyzs5cQJgRgljFamw108XE6e535vhBK8shDNpOmmdglqlNCEL3P-5bk_hsZQuU4LwQyeHVJTemOUraCla-1C8mEaR796hv5KUURWUFUyBLIaeLfgPbB2n7RRioDLSSPsjTZt1EEBdDLSM0_GFudGzKYzwA7my8Cx30VpwFcApA5_mynij0CJ-gSvwD-PhdpR1rXE6tvX8b-lZ6D3gF5wyxcizsdQuZuktPC0m9F35jQ8iehK9Ojz7BxvP8UGDrEloVDI7OZ5hQt-rs4yhphTj0n0RmmJOXWxZtUJ4pUi9WexJtP0vXDKY3FwJxYsLvV-nz2fpWEt-JvOu9gSLg"
+    },
+    {
+      "id": "27",
+      "label": "RedLies",
+      "username": "RedLies",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002VW1Wa1RHbGxjem94LnloSnotTW83T3VLbVFqTmsycTZHNXd4d21FckZLalJGYnpRX0daRkRFWGMiLCJleHAiOjE3OTEwNDIxNTUsImF6cCI6ImRldiJ9.YblpqB5BeknMRmYB4nWqXC3Z-ej6xxa39AQOecPPpBdQME8LU-3VrSupEVIULyn-OelmKRQg806NXHCEW0-I6ZJkCvrYro3YMKnm-LLGns684qiwnXyPpdVHgIlHtlgoZ7Jbv2PB46tn9sUoE-1hQXpVa6ik9RLGvdFUuPxnm8_Gw0roK1UXjH51pDOlCv19izrwoyy8oDPGhDr-PA3qtccv_MxJ6XRVaiEYC4wpqdKgNc7cNLyee1oZ6LTpc_e7hqkJJpNNelX0S8zIZ28D-RUGvc-FTT-rXH-PnLFWSokMs-OC0agSJ1ApnJVsB6yOzp1Dj5GnQNxsQeijs9h9PA"
+    },
+    {
+      "id": "28",
+      "label": "Stuart..Carmichael..",
+      "username": "Stuart..Carmichael..",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002VTNSMVlYSjBMaTVEWVhKdGFXTm9ZV1ZzTGk0Nk1RLnhmcFAtb1pVdEQ4MFVDX01UWVdiZ2d1eWNLb0NEX0djVDRvV2NORFh2X2ciLCJleHAiOjE3OTEwNDI1OTIsImF6cCI6ImRldiJ9.PoLkv8zGy3AzQnvjXEL3uUMs4zDQiqz_ylzppTagpHlue6unbixieNztJ21moscBHQ29bekL_koC_7T3EB8EmqY6KNuys9XG5fy9PbR_Urvv6mfRAm-U0Tx7H5Dahy5A2g3omrGFrwktBXuH05K4nL0uSwm_X9uKqr2WSYuF4giw8tPZRidEq8OxYPRgfhfZs4m5TLcVcUhPQPW3Tsv1ZFNSuX4tz-G_019Xce5X_k42wGLdmKC1kHiLMHBLMJziKIKIvI71rqCu6WUS09W1cfPb019R02XycyVQRYiJRXabEDLM9PdGfSRGXm6xgOLzvJYr8RkVqg52ke10tzWK8Q"
+    },
+    {
+      "id": "29",
+      "label": "FatFrank.",
+      "username": "FatFrank.",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002Um1GMFJuSmhibXN1T2pFLjhlSmRpWURhUmVGbTNrdEFYMjZxU3cyNWhtVER6NWZVdXBWT2pOZ195UGsiLCJleHAiOjE3OTEwNDI4MDAsImF6cCI6ImRldiJ9.EGOIyzbC4BZYlO83VdoDQ0Tg2v2qoFYcX6d2Asi1xhh0ztAo7xZcwP86xhb0gwy9D_PAdOEUpwHFy4KGNL8JRvDkbcjqN6ePFbZgqgZnNjYWQCRMfsUN8CXmAnFmV7ysQEpqY9wNBrS53flu4q55bcmm_FjI3PVAnXxWiM8a2bCWb4Rieft6M3coe9u5Kxgnma_0Rx-HjDDtykUxBL4BgxOkHxghKUDUvTn-tv5ZnMt7hOQMOdbrhhemmofUjY9rANBumDkROWna3OR144g-oGM4E5QypssZ20Kkd_7mPFjiQon__gLBzTXYr4Qit5X33peBguKJgugx7LxE0rFcmg"
+    },
+    {
+      "id": "30",
+      "label": "Jcool72",
+      "username": "Jcool72",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002U21OdmIydzNNam94LjIxUkZ2MnFOVE9VNlVUTk11c0JzVWl5R3dMRE9pWWdWblNDeUI5YlBCMnciLCJleHAiOjE3OTEwNDI5MzEsImF6cCI6ImRldiJ9.GNut6cdvl37gGUdEJ1WTKDXBD4SL732yvQcq1nLZzQRwLQG4gZ_-_6weWCiJBLwmrOCHW4XUQIAUtKwTgjoAknXqVycpi-crMyDtbIyag6gvMTlujW5ql_Re1VcRTfZ7DXbYdkQsb6jVyjhlxXernKban0jh-KH8tCsrnMg5Fe_2AiMrsMxHvLoDDnOWLLWJvR3qkeq2kUiQHCFSYDSC9QUxDdVJVi7uzykaq2YOPbcuojSEXKl1ezBVIPnCGJi-YT0hwd31Fen1CsyzEa_g253ROgu7-Tmcow7dznvqw81kw_5Rjvf-bocQDGc6Nwlzh2tRsapSLiWnhjpjd6DzKg"
+    },
+    {
+      "id": "31",
+      "label": "Ziggy.Ziggy",
+      "username": "Ziggy.Ziggy",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002V21sbloza3VXbWxuWjNrNk1RLk56eTJ0VVFLbnBkNXREcTc2bEpqdEcwbjFudHhENEN4aTdaOS1jTkVUUFEiLCJleHAiOjE3OTEwNDMxOTgsImF6cCI6ImRldiJ9.I4YXq4D93DAO38tZL57vUhjfzoZr5tIfwqlFwhnxfeg_SehI5gnOG_eXlYlfBvf14EZqKcWFZ1103lkG7-enhiXvMj92dbLIXXG3C2Ioo5uEvHL57dSgpyeYrYczqTaoTq83aSAFuetqoovfN1bSKmthhPR83pJ5dvD6oXP9o5ZDQ5VSvfkgcOdwixm7uhZF3YW4_8GXRwTj2JGFVYjDTe07iznoEXoPvoPswV7eEjAigAQbUOsVXLScX0pONk-fIcssUK3uEvhOrV_61JO9rVpwUC-3X12aAWfHrn2yqbIjJ0MfIdqm3des6xrsPBpQCRWK5H6TQNAJXpgTU6W_BQ"
+    },
+    {
+      "id": "32",
+      "label": "marvinIsBack",
+      "username": "marvinIsBack",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002YldGeWRtbHVTWE5DWVdOck9qRS5kd2liOFJKSlFla05LRThvWUVvbElPa3haRjVIbEoteElNZS1qblZ3NkpnIiwiZXhwIjoxNzkxMTM2MTI3LCJhenAiOiJkZXYifQ.iSh63yYgZXnY-XQXR0NYq7mqZsm5be8b0YcIPUsmSh2lfMcuPOw7LeSbxSxWwfVTxn07p7HqDGfMiWklO7nYf-zyi3ZBQbLoMK93up_vbNd4k00XMZkCp-1wcZ1xcidAMqZ54bsoJ3puvQjcB_Bjpis1Vzpu-bineNKOSQfb0VrNJEkjiheaMWCJzLeR1ySF6MlhZZqqOlb6neszMe4lK6iWOaYXtt0CkhtGg9OHw9XyASBjrBu-F7l7JoQi1QdSSgv01wRibVhKVYOJiDX3oI1GpMj9xwmxw4k1neHgKwtjZicer_LOFmtCod6MmbJaKpnIo4GNXO7S7Guw3SgQRw"
+    },
+    {
+      "id": "33",
+      "label": "germanUbend",
+      "username": "germanUbend",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002WjJWeWJXRnVWV0psYm1RNk1RLjhDMzdKRFBsWFcwWVlqVGlMbEVFbGFSZEZCMjh0YmF6aWQtS1dEY0tCMGMiLCJleHAiOjE3OTExMzYzMTQsImF6cCI6ImRldiJ9.nGTiZqc4LM86ycJvblpJ-GCcupRa2hc2P3TSLlVUoIVlR36gk_V-gFo2yEbSmSTBrfaglBt4tfPFMLx9Vl7eoyVRzlbKqxFpzoTZIACZyTQzeR70it7-3IpubfpxiXgPxtTxQhIdyxWgTmVYliGDV7jtis5CjWUE4fdVgM2tGNj_1tw3C1CYZm-9qR0ZsFqsum9fZDEjGLIfr9JSF0kPmb3Hjf7nItbFJyNOPGtA3TlVroCQpAg1Om24xpOHNuL1QBP4ycdCkGTKef172aH9MMQ6OwvjUn3DMdjdeHa5avDhZ18YaodnI5dRRn7lmNUlmtK33ORaixUkDdAZgAeqSQ"
+    },
+    {
+      "id": "34",
+      "label": "FozCrack.",
+      "username": "FozCrack.",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002Um05NlEzSmhZMnN1T2pFLlpzOHY0MlFYbVpaWXYtbTFGcnhxZDF0WGtBeFItY0diVXJzZzZkMDFoNUEiLCJleHAiOjE3OTExMzc3NTgsImF6cCI6ImRldiJ9.EDwAkGHpXhOBoDGOqw1roA4mIoL5bBrk2Ix2EOQpQ_GPni8iFgFvbKWeIFZZHUBDn_kwEdrx0IQsudEP6WJSahanPOr10xDJuTbACUjBRNgDhq-h2Rq8LbkQCCyVbk-G7JAztYz3ptlhJyZ2n9QVdrkhJXcaLGFZUi7lY9fFui_s6WaUe8PUxv6PFwGrzipuQJceg3jKyycp_Q0MapS7GvYp3gCLVAf8kcPvwZoY6xwe5dgnCQBgre-uKp0HZE3vIVCteEmT-SWY03XMl0SMwxKDro-lZhN-oZkGv124PIBL-Jy2GK6mN6jo2z_RJeUq7S4OfMpcZJi-rCqL-oGSCQ"
+    },
+    {
+      "id": "35",
+      "label": "bombayboy.",
+      "username": "bombayboy.",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002WW05dFltRjVZbTk1TGpveC5lTjZwcEZ5WUhfUFZqcVJjMXpBR1lKRzE5Z2hxa1R6QjhiSTZJcXp4bWY0IiwiZXhwIjoxNzkxMTM3OTg4LCJhenAiOiJkZXYifQ.Oe8x0_2AI7kRU2mnC68AgiPK0Bd4uwB1OzusjczdZaVKRtaLcsPoAAtQS7sQdLLOW8G4U1r532tyIIR0ndqDixUlVPRWQ0jhu7PD__v90ttm6v-8zR5YYuqc1IsnrallWMN74juLZHnyq4OA045L9jABwsUrHktycpdckJLvIhoJu6eSUwKXeccTVz5GWw4J6_nVJjygp9ZMdEiGJWt_NZ3eefBgnVXyxdJX9KcDtiFV3tPNoe5hpP5ubrs987HWddjX4WLwpWx_c_0izydOne5RI7xzmdYELqWx7YTAOxQtRmiVYOogZISMMrjq5YGiugYv9Wmglsawawq7bRkX8Q"
+    },
+    {
+      "id": "36",
+      "label": "BBGand",
+      "username": "BBGand",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002UWtKSFlXNWtPakUueENadlVsWlUzOXNvX0l3Y3g1R0VpVk5wenZpNGQwYUNFSDBCUERkTjdGYyIsImV4cCI6MTc5MTEzODIwNCwiYXpwIjoiZGV2In0.a36FypVSgelMsAPdRwUp6NhBYMAzTObnD3eFt0zvEaTrVVpKZU3ypKbiwUxH9qI1Ef0BMAWK0FYnRsU2qqMUoGBgBTS0QnZZ9Ub5Neo_k30drDtD-V9jUjLcaIKaANuolZmQ-MgafoloKGWKDJABeOgi6-qclrcZZqWYIF0PaCYPCrpMxSm3ABie4B-bLnwE493ArBeBVLQwIBYm6JwxLuumYe4k5yeBuxBIHul_63h4BMuLJx4cxeO7fy9gffRWg0MlUiNFU1Wn2aehrN4faN7Z-jD5SnrwDWyGMrF4RFp0qGItM-JRRYSj37CABXcoB1MT6lzcmzVevOFQ7rgiHg"
+    },
+    {
+      "id": "37",
+      "label": "Leanne.a.",
+      "username": "Leanne.a.",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002VEdWaGJtNWxMbUV1T2pFLkZZd2NCWWo1U2VsV1hjNDlIU25aSWQweEp4WTFNSVhURk5HWWMteHNmdjAiLCJleHAiOjE3OTExMzgzOTAsImF6cCI6ImRldiJ9.h0IOeBdBmjbwamgu6TPMjMxuw2h1SjiMZtA4jMZU33OD8FrupoSzOx_VE-QCtuJtosffwd-GAG5X3WskczPlh8qNJP981YKhoZCYhcYTiBJkXOVQydz62nBXypeEyg-kG5ls9NesJiv3yjUzAUmgzPfut7EVuVRj_oIlmuTuND_sJHT_8cJiWhJFni1bJvHCiYLOUD79jBey3D_0TvFVdqba0EtdoDnCuX0eY6aceMFibzqvFHoHByW3inoDwH-V_7CveKaCJtHsfpE8icKxILjQYXU3FMstOldiKSrS3KcDkkkZbDYA9OwAoxieVJesTOKwrOM469pIejJMmCGLDg"
+    },
+    {
+      "id": "38",
+      "label": "Alex",
+      "username": "Alextruckerr",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002UVd4bGVIUnlkV05yWlhKeU9qRS50bHpMRURxS0oxbU83aWluWjluYko4aUgybTRxMV85V0VHb2ZtZmM0MWdzIiwiZXhwIjoxNzkxMzU4ODUyLCJhenAiOiJkZXYifQ.YFw7bjIAoL5zxnghbG8nGj3_RHBXd7H6zDSMNL-8VdBnBEqs94_sEHU6x77bpbpTwsD6iKW44NGSIfzhUrWCedM1B4RHMgJ5T5AubdRmN6eYOEpYjtqvdApfehtWA2BdMQdVYfVqSdjha8CxaLf8W33LUCShWEpMwXT0qYhdPAcZMMHkC31dbcVLS1n9wdf6GcoYFIt84dJP5mNWkqKJ5rk65XigZZ5o99hNaY7mdWFGWo2BwDEi7icZmfalWurECa_MD63w-JM239E1tGHzAAwnXq-DeZYoi8yQyKnnQm6VhIWuOR6BYzQ4I_Ha_nTfraBvNveKLVfbaLc39p-SmA"
+    },
+    {
+      "id": "39",
+      "label": "American Sarah",
+      "username": "American Sarah",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002UVcxbGNtbGpZVzRnVTJGeVlXZ3NPakUuaGRuSTBZNzI5S1owYVJNd0xHQ3Y2MUE4a3B0MENLUUpFR2pmV2RsTFlzSSIsImV4cCI6MTc5MTM1ODk0MSwiYXpwIjoiZGV2In0.Md-9Ne19qw7hbRo_PZ9nPMgDhGuQ2TOlrMa_TOimdSCig5L-yb4TfoBm96jiE0mjBk1LgJO7wyBCKR43cRtUBfGQpFZ5x0FrX62_l01nzLKLQn4W9saPWxdo1Jz4qttKk3w_qW6SifRPau1el8PF3_EAeR6izvJEhFbyOYZ0OoNfkReS4KvlEJ9IMIY_6xyHWXv2jRa_Mb2M8OzdTolB-bUPkhcV8gQJUiiNeP5z4XLfoXQOMLco5dQo0y-yWXTEmPAYkZBmHuX7rO_y0NzuNuR0B31ATFGOXrDShEP_Jp0bRl_v-tUaJ0PUDMvusjGaAyQjapuMlAV9mzTvk-PEHg"
+    },
+    {
+      "id": "40",
+      "label": "ford",
+      "username": "fordpowerr",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002Wm05eVpIQnZkMlZ5Y2pveC5IaXppVUhFZ3hWazlrV1dNSVJna00wYklSQjVEUnZMVmJLdEJJZE5PR2tzIiwiZXhwIjoxNzkxMzU5MDQzLCJhenAiOiJkZXYifQ.DJmuF-MWb45LrZC_J2qgzdhVJEVw8xNoURzpCV6j_e5VCox1e5qjMbqiJFEeWOGfNB95zPupWkFqLGkpfsaveM-_YUcHoykrxUT4JoHBkUKEmdalgW94iigZ0jF-Ry9fq9hYi-mMrj35Ns4E4_ep8nyvXSU8VV35b1bBGLJ8CLxLqbAcQSYTwiWDFR_fUuiCxCJFX6x7f2dCVFwkU7LuTFTk-pCh2cAygy8lV-Bp3Cn7smvXPk5Lc0iZ5NsWadd6niKkTmUjQuQbgNkpZ9Z3bxdI4RV_CyNs5V7kS5OPYY_28Urw82lgHBayj0G_uQGk30jJEndSdYvkLLmxb8p5Ag"
+    },
+    {
+      "id": "41",
+      "label": "dj huddersfield",
+      "username": "dj huddersfieldisgay",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002WkdvZ2FIVmtaR1Z5YzJacFpXeGthWE5uWVhrNk1RLnd0S1dfam40VnlFZ1ZBVWlya3N4aHhfUHJ0akJxWnNEd1RkdnBUYmNrWVkiLCJleHAiOjE3OTEzNTkzNDksImF6cCI6ImRldiJ9.dddNthDAnEGNLzdQ9RKNEe58d_PFQzrVE-eBSW07veye14k1SLF8RQpOZJe5k98ZC-fpdGBCwV1lxUj98stubWYvDX1_i_97ta7FECqhzOHBZWZl1rASUK2tewsH1slSRfp9OWN2j9D5DrgCPLYXv5Ujt6mtZiuCqEyDZLmQrhX5tyqYHKDqg_RB9BnQ5VpL0q-pugLeu0f3SfxLFiWgMid31cvG2QpMt6NBCjfxyi5fBwMT2kXPq5Qf_SkLJsF8z3ubYp7sOdHHsRgOmY0sITuiCr1-2nlGzRws21VZoX7H_x8sAAiQOdwpLdkuJUbtZS70iSXywa5w9PJQOv5mPg"
+    },
+    {
+      "id": "42",
+      "label": "Kelz",
+      "username": "kelz not today",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002YTJWc2VpQnViM1FnZEc5a1lYazZNUS5BbGhVVUxILVUtU2J1N0JtY25OemlNUHVHclB6QlZ5ZzJIVzZqNjBHT3c0IiwiZXhwIjoxNzkxMzU5NzQyLCJhenAiOiJkZXYifQ.Khzhk4mL9aBLFz6g4VbBOjmg1_aCYyJtyk-D8yfDXLB2LRCClL9wpVmJ7EManU9C39ONlaUc9IPJH6dtONUBBb99ta3CCj4gmCZMGTWLTomF4m_cYFqc6PXVNdfY2Psj2TSgFoiz4Yl7r64JIGxNaN5gv1idEbz_z0WP7HoZmICSmbgGrLXgccEAKqq8TOFXm0SjMsWZVYdCVe1YZYui-rxJR9wlbUEgLzgANi60IYu3dlD8JhUbw13Zh8_JSMveKW_GBDsnQUWZfjtujw9r_KaPcWYEblvSkqaUsF2gOkKql6kgRoQcpCMJos2v48GZt30E86OYyVGwJ4yfu-rNZA"
+    },
+    {
+      "id": "43",
+      "label": "Smokin Stacks",
+      "username": "Smokin Stacks1",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002VTIxdmEybHVJRk4wWVdOcmN6RTZNUS44X2p3Y0hSaEZmUnltUUZhU3JfQnZKMWpxbVVMX1RTa0JETkZITTh5NkZvIiwiZXhwIjoxNzkxMzU5OTE5LCJhenAiOiJkZXYifQ.hmS7JrjCe25epZCZ7crmMAgevWH0odxZkTkeUZnD4A-HLSpyOAlCwcwyPAn8u1bizLKqEyDe1n6pZJ56gT_msoYJ99wQzRZSQbSs-N_YYa8pVH5kY51X_89GHCl9vo8fUmJi1E6ZEy30qiqLGenNO0IaGAertn9vdnAh5IcrTSBvWtedinTXbm3YykMs49QbHVXh4FYUYw8mRNrYvttgnp6fRP1XvK0hytBS4B_38S2RzqBvZ0xxESYdx8kMxNTvKH6UsaV0cYiWxf-XbtNy4Kno05_vvHM2HoACN1WpB9NrCbH6qTNU85yluGTinzOoiFJLYllKc3DeYBtaBYaAJQ"
+    },
+    {
+      "id": "44",
+      "label": "Tinny",
+      "username": "Tinnyman",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002VkdsdWJubHRZVzQ2TVEueG9jbTBLRG9IZmVObGlueFJZRndkRGF3Zk1kenhCQURRbktOVHktT2s5YyIsImV4cCI6MTc5MTM2MDIzMiwiYXpwIjoiZGV2In0.W3jScwdR3KWYwTjVApofeNI-zS9J9AC_4coLtWZXDYiqQWivX7pJ2f373Kvoq4rx7qier23gIbq90i9ibOLMfF2P0JyLwO4jKdf41cTb54hx6snObtIhIemgaxNVsYd67w4XOBOJPBFyy_jUn5iIR6g6yjrruj15vBehOX6K3gcXEWOlVOZQ2onOCi27AOOOHpde0qrXd6fxTLFdCuFKux97iWu_WhX-0Lj7iurFYkfi8grn9BDNL_ILGeZxONDeb4nbpTDZXkRDPbmnz9V2S3RGRn8G4JcJRe_ZYNPy02-9b7p4m7-NRGt8exfJLbvDDzoYHbfREU0rRdsYpg9nSw"
+    },
+    {
+      "id": "45",
+      "label": "welshmark",
+      "username": "welshmark1",
+      "password": "123123",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJXa002ZDJWc2MyaHRZWEpyTVRveC5BVjk5dXlIMmFUcDI1ZlRid0Z5OGdsVnNTSW4yWlJ3dElOeVpFSVBxSXRJIiwiZXhwIjoxNzkxMzYwMzk3LCJhenAiOiJkZXYifQ.i1Jyt_PqIEjOkqe-qCtQbfG3WQN4sxZ8xB0rOQ1Z1LcPwbHRpOzejRNQ-KjlUYeV1to09Qap0y-XAcADc43JL-Y8Tv9Gu0SlFGYiC4bSCe5xTv29kHm5UHE1hmNpcuyBcDviNLUB19DS1WGCbyZqwgwIQgYPdxDBOFWjgunrdV4476JouMRQnoNMPHrzw8cdhfnQvhO7srlbwNm73meAeHm6tjZMpVq3xTyIVZ4KA3_Yj_gzsrLn1ac_NTcqgh9J6FSMhnphq4rjzMVGjITaqoTUCtNC6NEFLfiQQQuL_d01V2bc1ZX3CyHMvko1UGnxZ5bubv_fiHZlN1Z7tS9fmg"
+    }
+  ],
+  "channels": [
+    {
+      "key": "zello pioneers.",
+      "name": "zello pioneers.",
+      "accountId": "4"
+    },
+    {
+      "key": "the all new roundabout",
+      "name": "the all new roundabout",
+      "accountId": "5"
+    },
+    {
+      "key": "zello gamerz",
+      "name": "zello gamerz",
+      "accountId": "4"
+    },
+    {
+      "key": "good vibes :)",
+      "name": "good vibes :)",
+      "accountId": "4"
+    },
+    {
+      "key": "...the...target...",
+      "name": "...THE...TARGET...",
+      "accountId": "4"
+    },
+    {
+      "key": "stevefpv.",
+      "name": "stevefpv.",
+      "accountId": "4"
+    },
+    {
+      "key": "zello chess",
+      "name": "ZELLO CHESS",
+      "accountId": "5"
+    },
+    {
+      "key": "tiktok podcast",
+      "name": "TikTok podcast",
+      "accountId": "5"
+    },
+    {
+      "key": "no scotland no zello",
+      "name": "no scotland no zello",
+      "accountId": "7"
+    },
+    {
+      "key": "glasgowog",
+      "name": "GlasgowOG",
+      "accountId": "4"
+    },
+    {
+      "key": "the bablebox...",
+      "name": "the Bablebox...",
+      "accountId": "5"
+    },
+    {
+      "key": "no scotland no zello two",
+      "name": "no scotland no zello two",
+      "accountId": "5"
+    },
+    {
+      "key": "p a t t e r",
+      "name": "p a t t e r",
+      "accountId": "4"
+    },
+    {
+      "key": "cb radio drama free",
+      "name": "cb radio drama free",
+      "accountId": "4"
+    },
+    {
+      "key": "zak' s next-door 2",
+      "name": "Zak' s next-door 2",
+      "accountId": "4"
+    }
+  ],
+  "voices": [
+    "abby.wav",
+    "Abraham.wav",
+    "Alex.wav",
+    "American Sarah.wav",
+    "Badger.wav",
+    "BBGand.wav",
+    "beavis.wav",
+    "bombayboy.wav",
+    "dean.wav",
+    "dj huddersfield.wav",
+    "Eat my Hat.wav",
+    "fatfrank.wav",
+    "ford.wav",
+    "FozCrack.wav",
+    "german u boat.wav",
+    "germanUbend.wav",
+    "ghost.wav",
+    "goodguy.wav",
+    "gorden.wav",
+    "Guest Queer.wav",
+    "Hitman.wav",
+    "Invisible.wav",
+    "John Leslie.wav",
+    "Joker.wav",
+    "Joyce Ann.wav",
+    "Kelz.wav",
+    "KRAFT.wav",
+    "Leanne44.wav",
+    "marvinIsBack.wav",
+    "modgirl.wav",
+    "moozlim nukes.wav",
+    "Nimble.wav",
+    "redeyes.wav",
+    "Scouse Mikey.wav",
+    "Smokin Stacks.wav",
+    "Stuart.wav",
+    "sugar.wav",
+    "TANYA.wav",
+    "Tinny.wav",
+    "Tommy.wav",
+    "Toon.wav",
+    "Wee Vik.wav",
+    "welshmark.wav",
+    "wulliedunhill.wav",
+    "xbacardicatx.wav",
+    "ZAK.wav"
+  ]
+}

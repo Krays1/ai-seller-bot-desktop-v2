@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+  <title>Zello Bot Desktop 2.0</title>
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./final-console.css">
+</head>
+
+<body class="ford-command-body">
+
+  <main class="ford-command-app">
+
+    <!-- ==================================================
+         TOP COMMAND BAR
+         ================================================== -->
+    <header class="ford-topbar final-hardware-topbar">
+
+      <div class="ford-brand">
+
+        <div class="ford-logo final-ford-logo">
+          F
+        </div>
+
+        <div class="ford-brand-copy">
+
+          <span class="ford-brand-kicker">
+            ZELLO BOT DESKTOP 2.0
+          </span>
+
+          <h1 id="page-title">
+            Bot Command Center
+          </h1>
+
+        </div>
+
+      </div>
+
+
+      <div class="ford-top-status">
+
+        <div class="top-status-item">
+          <span class="status-light"></span>
+
+          <div>
+            <small>RUNTIME</small>
+            <strong id="runtime-label">Loading</strong>
+          </div>
+        </div>
+
+
+        <div class="top-status-item">
+          <span class="status-light"></span>
+
+          <div>
+            <small>APP</small>
+            <strong id="app-status">Starting</strong>
+          </div>
+        </div>
+
+
+        <div class="top-status-item zello-top-status">
+          <span class="status-light"></span>
+
+          <div>
+            <small>ZELLO</small>
+
+            <strong id="zello-runtime-status">
+              Disconnected
+            </strong>
+          </div>
+        </div>
+
+
+        <button
+          id="zello-disconnect-button"
+          class="top-disconnect-button"
+          type="button"
+          disabled
+        >
+          Disconnect
+        </button>
+
+      </div>
+
+    </header>
+
+
+    <section
+      id="settings-section"
+      class="ford-dashboard final-hardware-dashboard"
+    >
+
+      <!-- ===============================================
+           LEFT HARDWARE RACK
+           =============================================== -->
+
+      <aside class="ford-left-column hardware-left-rack">
+
+                <nav class="left-rack-tabs" aria-label="Left rack pages">
+          <button
+            type="button"
+            class="left-rack-tab is-active"
+            data-left-tab="channel"
+          >
+            Channel
+          </button>
+          <button
+            type="button"
+            class="left-rack-tab"
+            data-left-tab="roster"
+          >
+            Roster
+          </button>
+          <button
+            type="button"
+            class="left-rack-tab"
+            data-left-tab="control"
+          >
+            Control
+          </button>
+          <button
+            type="button"
+            class="left-rack-tab"
+            data-left-tab="brain"
+          >
+            Brain
+          </button>
+        </nav>
+
+        <div class="left-rack-pages">
+
+        <div
+          class="left-rack-page is-active"
+          data-left-page="channel"
+        >
+
+        <section class="ford-panel connection-panel hardware-module">
+
+          <header class="panel-title-row hardware-module-header">
+            <div>
+              <span class="panel-kicker">ZELLO CHANNEL</span>
+              <h2>Channels</h2>
+            </div>
+            <span id="zello-channel-state" class="panel-state">No channel</span>
+          </header>
+
+          <p id="channel-model-badge" class="active-model-badge" aria-live="polite">
+            Model: …
+          </p>
+
+          <div class="channel-active-block">
+            <div class="multi-bot-roster-head">
+              <span>Active channels</span>
+              <button type="button" id="channel-select-all" class="small-primary-button">Select all</button>
+              <button type="button" id="channel-select-none" class="small-primary-button">Clear</button>
+            </div>
+            <p class="multi-bot-hint">Tick channels you want available. Primary = first ticked. Assign bots on Roster.</p>
+            <div id="channel-multi-list" class="channel-multi-list"></div>
+            <div class="channel-add-row">
+              <input
+                id="zello-channel-name"
+                type="text"
+                maxlength="200"
+                autocomplete="off"
+                placeholder="Add / primary channel name"
+              >
+              <button type="button" id="channel-add-button" class="small-primary-button">Add</button>
+              <button id="zello-channel-save-button" class="small-primary-button" type="button">
+                Save channels
+              </button>
+            </div>
+            <select id="zello-channel-pick" class="is-visually-hidden" aria-hidden="true" tabindex="-1">
+              <option value="">(import catalog)</option>
+            </select>
+          </div>
+
+          <div class="channel-assign-row">
+            <label class="ford-field grow-field">
+              <span>Assign all bots to</span>
+              <select id="channel-assign-target"></select>
+            </label>
+            <button type="button" id="channel-assign-all" class="small-primary-button">Assign all</button>
+            <button type="button" id="channel-assign-primary" class="small-primary-button">Use primary</button>
+          </div>
+
+          <form id="zello-channel-form" class="is-visually-hidden" aria-hidden="true">
+            <button type="submit" hidden>Save</button>
+          </form>
+
+          <details class="primary-creds-collapse">
+            <summary>Primary credentials (optional)</summary>
+            <form id="zello-credentials-form" class="credentials-form">
+              <label class="ford-field full-field">
+                <span>Pick bot account</span>
+                <select id="zello-bot-pick" title="Imported bot accounts">
+                  <option value="">(import catalog)</option>
+                </select>
+              </label>
+              <label class="ford-field full-field">
+                <span>Bot username</span>
+                <input
+                  id="zello-bot-username"
+                  type="text"
+                  maxlength="200"
+                  autocomplete="username"
+                  placeholder="Bot username"
+                >
+              </label>
+              <label class="ford-field">
+                <span>Password</span>
+                <div class="secret-control">
+                  <input
+                    id="zello-password"
+                    type="password"
+                    maxlength="1000"
+                    autocomplete="current-password"
+                    placeholder="Password"
+                  >
+                  <button id="zello-password-toggle" class="show-secret-button" type="button">Show</button>
+                </div>
+              </label>
+              <label class="ford-field">
+                <span>Token</span>
+                <div class="secret-control">
+                  <input
+                    id="zello-token"
+                    type="password"
+                    maxlength="4000"
+                    autocomplete="off"
+                    placeholder="Token"
+                  >
+                  <button id="zello-token-toggle" class="show-secret-button" type="button">Show</button>
+                </div>
+              </label>
+              <div class="credentials-footer full-field">
+                <span id="zello-credentials-state" class="panel-state">Not configured</span>
+                <button id="zello-credentials-save-button" class="small-primary-button" type="submit">
+                  Save credentials
+                </button>
+              </div>
+            </form>
+          </details>
+
+          <div class="connect-row">
+            <button id="zello-connect-button" class="connect-ford-button" type="button">
+              <span class="connect-button-dot"></span>
+              Connect bots
+            </button>
+            <div class="connection-ready">
+              <span class="ready-light"></span>
+              <div>
+                <strong id="zello-ready-title">Waiting for setup</strong>
+                <span id="zello-ready-copy">
+                  Select channels, set Join on Roster, then Connect.
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div id="zello-runtime-error" class="runtime-error is-hidden"></div>
+        </section>
+
+        </div>
+
+        <div class="left-rack-page" data-left-page="roster">
+
+        <section class="ford-panel bots-panel hardware-module">
+          <header class="panel-title-row hardware-module-header">
+            <div>
+              <span class="panel-kicker">BOT ROSTER</span>
+              <h2>Join · Speak · Name · Channel</h2>
+            </div>
+            <span id="bots-roster-state" class="panel-state">Idle</span>
+          </header>
+
+          <p id="roster-model-badge" class="active-model-badge" aria-live="polite">
+            Model: …
+          </p>
+
+          <div id="bots-service-status" class="bots-service-status" aria-live="polite">
+            <span id="bots-brain-status" class="bots-svc-pill">Brain: …</span>
+            <span id="bots-omnivoice-status" class="bots-svc-pill">OmniVoice: …</span>
+            <span id="bots-stt-status" class="bots-svc-pill">STT: …</span>
+          </div>
+
+          <div id="multi-bot-roster" class="multi-bot-roster">
+            <div class="multi-bot-roster-head">
+              <span>Controllers</span>
+              <button type="button" id="multi-bot-enable-all" class="small-primary-button">Join all</button>
+              <button type="button" id="multi-bot-disable-all" class="small-primary-button">Leave all</button>
+              <button type="button" id="multi-bot-speak-all" class="small-primary-button">Speak all</button>
+              <button type="button" id="multi-bot-mute-all" class="small-primary-button">Mute speak</button>
+            </div>
+            <p class="multi-bot-hint">Join = in channel. Speak = talk freely (overrides Name). Name = reply when called. Off/off = listen only. Channel blank = primary.</p>
+            <div class="multi-bot-col-head multi-bot-col-head-roster">
+              <span>Join</span>
+              <span>Speak</span>
+              <span>Name</span>
+              <span>Channel</span>
+              <span>Bot</span>
+              <span>Voice</span>
+              <span>Status</span>
+            </div>
+            <div id="multi-bot-list"></div>
+            <button type="button" id="multi-bot-save" class="small-primary-button">Save roster</button>
+          </div>
+
+          <div id="say-as-panel" class="say-as-panel">
+            <div class="multi-bot-roster-head">
+              <span>Talk as bot</span>
+            </div>
+            <p class="multi-bot-hint">Only bots with Speak on can transmit typed lines.</p>
+            <label class="ford-field full-field">
+              <span>Speak as</span>
+              <select id="say-as-bot"></select>
+            </label>
+            <label class="ford-field full-field">
+              <span>Message</span>
+              <textarea id="say-as-text" rows="3" placeholder="Type what this bot should say on Zello…"></textarea>
+            </label>
+            <button type="button" id="say-as-send" class="small-primary-button">Speak on channel</button>
+            <p id="say-as-status" class="multi-bot-hint"></p>
+          </div>
+        </section>
+
+        </div>
+
+        <div class="left-rack-page" data-left-page="control">
+
+        <section class="ford-panel bots-panel hardware-module">
+          <header class="panel-title-row hardware-module-header">
+            <div>
+              <span class="panel-kicker">CONTROL</span>
+              <h2>Brain PC · model · fight</h2>
+            </div>
+          </header>
+
+          <div class="bots-brain-bar">
+            <label class="bots-brain-field">
+              <span>Brain PC</span>
+              <select id="bots-llm-host-mode" title="Which PC runs Ollama">
+                <option value="auto">Auto (Other first)</option>
+                <option value="other-pc">Other PC</option>
+                <option value="this-pc">This PC</option>
+              </select>
+            </label>
+            <label class="bots-brain-field bots-brain-model">
+              <span>Model on that PC</span>
+              <select id="bots-ollama-model" title="All models installed on the active brain PC"></select>
+            </label>
+            <button type="button" id="bots-brain-refresh" class="small-primary-button">Refresh</button>
+            <p id="bots-brain-confirm" class="bots-brain-confirm">Brain not checked</p>
+          </div>
+
+          <details class="bots-advanced-block">
+            <summary>Fight / chat flow settings</summary>
+            <div class="bots-advanced-inner">
+              <label class="ford-field full-field">
+                <span>Who answers</span>
+                <select id="multi-bot-reply-mode">
+                  <option value="random">Fight (random / aggressive)</option>
+                  <option value="roundRobin">Round robin</option>
+                  <option value="preferred">Preferred only</option>
+                </select>
+              </label>
+              <label class="ford-field full-field">
+                <span>Fighters per turn</span>
+                <select id="multi-bot-max-fighters">
+                  <option value="2">2 bots fight</option>
+                  <option value="3" selected>3 bots fight</option>
+                  <option value="4">4 bots fight</option>
+                  <option value="5">5 bots fight</option>
+                </select>
+              </label>
+              <label class="ford-field full-field">
+                <span>Cooldown between fights (ms)</span>
+                <input id="multi-bot-cooldown" type="number" min="0" max="60000" step="50" value="200">
+              </label>
+              <label class="checkbox-option">
+                <input type="checkbox" id="multi-bot-peer-chat">
+                <span>Bots steal button from each other</span>
+              </label>
+
+              <div class="chat-flow-block">
+                <div class="multi-bot-roster-head">
+                  <span>Chat flow</span>
+                </div>
+                <p class="multi-bot-hint">Banter / argument controls for longer talk, cut-off, and memory.</p>
+                <label class="ford-field full-field">
+                  <span>Chat mode</span>
+                  <select id="chat-flow-mode">
+                    <option value="chat">Chat</option>
+                    <option value="banter" selected>Banter</option>
+                    <option value="argument">Argument</option>
+                    <option value="extreme">Extreme</option>
+                  </select>
+                </label>
+                <label class="ford-field full-field">
+                  <span>Max user talk (seconds)</span>
+                  <input id="chat-max-user-talk" type="number" min="3" max="120" step="1" value="20">
+                </label>
+                <label class="checkbox-option">
+                  <input type="checkbox" id="chat-cut-in" checked>
+                  <span>Cut in when capped (seize TX as soon as channel clears)</span>
+                </label>
+                <label class="ford-field full-field">
+                  <span>Bot speak target (seconds)</span>
+                  <input id="chat-bot-speak-sec" type="number" min="5" max="45" step="1" value="12">
+                </label>
+                <label class="ford-field full-field">
+                  <span>Memory depth (messages)</span>
+                  <input id="chat-memory-depth" type="number" min="8" max="120" step="2" value="24">
+                </label>
+                <label class="checkbox-option">
+                  <input type="checkbox" id="chat-interrupt-reset" checked>
+                  <span>Interrupt reset (abort mid-TX, listen &amp; reply next)</span>
+                </label>
+                <div class="multi-bot-roster-head" style="margin-top:10px">
+                  <span>Voice quality / speed</span>
+                </div>
+                <p class="multi-bot-hint">Fast = snappier fight replies. Quality = cleaner clones, slower.</p>
+                <label class="ford-field full-field">
+                  <span>Preset</span>
+                  <select id="bots-voice-preset">
+                    <option value="fast" selected>Fast (steps 6)</option>
+                    <option value="balanced">Balanced (steps 10)</option>
+                    <option value="quality">Quality (steps 14)</option>
+                  </select>
+                </label>
+                <label class="ford-field full-field">
+                  <span>OmniVoice steps (4–16)</span>
+                  <input id="bots-omnivoice-steps" type="number" min="4" max="16" step="1" value="6">
+                </label>
+                <label class="ford-field full-field">
+                  <span>OmniVoice speed</span>
+                  <input id="bots-omnivoice-speed" type="number" min="0.25" max="4" step="0.05" value="1">
+                </label>
+              </div>
+              <button type="button" id="control-save-settings" class="small-primary-button">Save control settings</button>
+            </div>
+          </details>
+        </section>
+
+        </div>
+
+        <div class="left-rack-page" data-left-page="brain">
+
+        <section class="ford-panel behavior-panel hardware-module">
+          <header class="panel-title-row hardware-module-header">
+            <div>
+              <span class="panel-kicker" id="identity-behavior-kicker">BRAIN &amp; VOICE</span>
+              <h2 id="identity-behavior-title">Brain</h2>
+            </div>
+            <span id="voice-bot-state" class="panel-state">Idle</span>
+          </header>
+
+          <form
+
+            id="voice-engine-form"
+            class="voice-engine-form"
+          >
+
+            <div class="behavior-top-row">
+
+              <label class="ford-field">
+
+                <span>RP Name</span>
+
+                <input
+                  id="rp-identity-name"
+                  type="text"
+                  maxlength="120"
+                  autocomplete="off"
+                  placeholder="Bot"
+                >
+
+              </label>
+
+
+              <label class="ford-field">
+
+                <span>Global mood</span>
+
+                <select id="ford-mood">
+                  <option value="chat">Chat</option>
+                  <option value="banter" selected>Banter</option>
+                  <option value="argument">Argument</option>
+                  <option value="extreme">Extreme</option>
+                </select>
+
+              </label>
+
+
+              <label class="auto-reply-switch">
+
+                <input
+                  id="voice-auto-reply"
+                  type="checkbox"
+                  checked
+                >
+
+                <span class="switch-track">
+                  <span class="switch-knob"></span>
+                </span>
+
+                <strong>Auto reply</strong>
+
+              </label>
+
+            </div>
+
+
+            <label class="ford-field">
+
+              <span id="identity-voice-label">
+                Bot voice
+              </span>
+
+              <div class="voice-select-row">
+
+                <div
+                  class="custom-voice-select"
+                  id="custom-voice-select"
+                >
+                  <select
+                    id="omnivoice-voice"
+                    class="voice-native-select"
+                    tabindex="-1"
+                    aria-hidden="true"
+                  >
+                    <option value="">
+                      Default voice
+                    </option>
+                  </select>
+
+                  <button
+                    id="custom-voice-select-button"
+                    class="custom-voice-select-button"
+                    type="button"
+                    aria-haspopup="listbox"
+                    aria-expanded="false"
+                  >
+                    <span
+                      id="custom-voice-select-value"
+                      class="custom-voice-select-value"
+                    >
+                      Default voice
+                    </span>
+
+                    <span
+                      class="custom-voice-select-chevron"
+                      aria-hidden="true"
+                    ></span>
+                  </button>
+
+                  <div
+                    id="custom-voice-select-menu"
+                    class="custom-voice-select-menu"
+                    role="listbox"
+                    hidden
+                  ></div>
+                </div>
+
+                <button
+                  id="omnivoice-refresh-button"
+                  class="show-secret-button"
+                  type="button"
+                >
+                  Refresh
+                </button>
+
+              </div>
+
+            </label>
+
+
+            <div class="voice-tuning-row">
+
+              <label class="ford-field">
+
+                <span>Speed</span>
+
+                <input
+                  id="omnivoice-speed"
+                  type="number"
+                  min="0.25"
+                  max="4"
+                  step="0.05"
+                  value="1"
+                >
+
+              </label>
+
+
+              <label class="ford-field">
+
+                <span>Quality steps</span>
+
+                <input
+                  id="omnivoice-steps"
+                  type="number"
+                  min="4"
+                  max="16"
+                  step="1"
+                  value="10"
+                >
+
+              </label>
+
+
+              <button
+                id="voice-engine-save-button"
+                class="save-ford-button"
+                type="submit"
+              >
+                Save bot
+              </button>
+
+            </div>
+
+
+            <div class="voice-health-row">
+
+              <span id="omnivoice-health">
+                OmniVoice not checked
+              </span>
+
+              <span id="voice-engine-save-status">
+                Not saved this session
+              </span>
+
+            </div>
+
+
+            <div class="engine-settings-grid">
+
+              <label class="engine-field">
+
+                <span>BRAIN HOST</span>
+
+                <select id="llm-host-mode" title="This PC, Other PC, or auto">
+                  <option value="auto">Auto (Other PC first)</option>
+                  <option value="other-pc">Other PC</option>
+                  <option value="this-pc">This PC</option>
+                </select>
+
+              </label>
+
+
+              <label class="engine-field">
+
+                <span>THIS PC URL</span>
+
+                <input
+                  id="ollama-url-this-pc"
+                  type="text"
+                  maxlength="1000"
+                  autocomplete="off"
+                  placeholder="http://127.0.0.1:11434"
+                >
+
+              </label>
+
+
+              <label class="engine-field">
+
+                <span>OTHER PC URL</span>
+
+                <input
+                  id="ollama-url-other-pc"
+                  type="text"
+                  maxlength="1000"
+                  autocomplete="off"
+                  placeholder="http://192.168.1.92:11434"
+                >
+
+              </label>
+
+
+              <label class="engine-field">
+
+                <span>ACTIVE BRAIN</span>
+
+                <input
+                  id="ollama-url"
+                  type="text"
+                  maxlength="1000"
+                  autocomplete="off"
+                  readonly
+                  placeholder="Resolving…"
+                >
+
+              </label>
+
+
+              <p id="llm-host-status" class="llm-host-status">
+                Brain: not checked
+              </p>
+
+
+              <label class="engine-field">
+
+                <span>OLLAMA MODEL</span>
+
+                <div class="model-picker-row">
+                  <select
+                    id="ollama-model"
+                    title="Models available on the active brain PC"
+                  ></select>
+                  <button
+                    type="button"
+                    id="ollama-refresh-models"
+                    class="small-primary-button"
+                  >
+                    Refresh models
+                  </button>
+                </div>
+
+              </label>
+
+              <p id="ollama-model-status" class="llm-host-status">
+                Models: not loaded
+              </p>
+
+
+              <label class="engine-field">
+
+                <span>WHISPER</span>
+
+                <input
+                  id="stt-url"
+                  type="text"
+                  maxlength="1000"
+                  autocomplete="off"
+                  placeholder="http://127.0.0.1:9000/v1/audio/transcriptions"
+                >
+
+              </label>
+
+
+              <label class="engine-field">
+
+                <span>OMNIVOICE</span>
+
+                <input
+                  id="omnivoice-url"
+                  type="text"
+                  maxlength="1000"
+                  autocomplete="off"
+                  placeholder="http://127.0.0.1:8002"
+                >
+
+              </label>
+
+            </div>
+
+          </form>
+
+        </section>
+
+        </div>
+        </div>
+
+      </aside>
+
+
+      <!-- ===============================================
+           MAIN HARDWARE DECK
+           =============================================== -->
+
+      <div class="ford-right-column hardware-main-deck final-right-console">
+
+        <section class="ford-panel runtime-panel hardware-module final-runtime-module">
+
+          <header class="panel-title-row hardware-module-header">
+
+            <div>
+              <span
+                class="panel-kicker"
+                id="identity-runtime-kicker"
+              >
+                FORD RUNTIME
+              </span>
+
+              <h2>Live Conversation</h2>
+            </div>
+
+            <div class="runtime-status-pills">
+
+              <span
+                id="audio-pipeline-state"
+                class="runtime-pill"
+              >
+                Idle
+              </span>
+
+              <span class="runtime-pill">
+                MOOD
+                <strong id="voice-bot-behavior">
+                  Nice
+                </strong>
+              </span>
+
+            </div>
+
+          </header>
+
+
+          <div class="final-runtime-deck final-runtime-deck-v2 final-runtime-deck-no-vu">
+
+              <!-- Preserve runtime hooks without displaying meters. -->
+              <div class="removed-vu-runtime-hooks">
+                <div id="voice-vu-needle"></div>
+                <div id="bot-vu-needle"></div>
+                <div id="audio-led-input" class="led-stack"></div>
+                <div id="audio-led-output" class="led-stack"></div>
+              </div>
+
+            <div class="conversation-crt-shell final-conversation-monitor">
+
+              <div class="crt-bezel">
+
+                <div class="crt-screen conversation-crt">
+
+                  <div class="crt-scanlines"></div>
+
+                  <div class="crt-speaker-row">
+                    <span class="crt-label">
+                      CURRENT SPEAKER
+                    </span>
+
+                    <strong id="voice-bot-speaker">
+                      None
+                    </strong>
+                  </div>
+
+                  <div class="crt-divider"></div>
+
+                  <div class="crt-message-block">
+                    <span class="crt-label">
+                      HEARD
+                    </span>
+
+                    <strong id="voice-bot-transcript">
+                      Waiting for speech
+                    </strong>
+                  </div>
+
+                  <div class="crt-message-block">
+                    <span
+                      class="crt-label"
+                      id="identity-response-label"
+                    >
+                      FORD
+                    </span>
+
+                    <strong id="voice-bot-response">
+                      No response yet
+                    </strong>
+                  </div>
+
+                  <div
+                    id="voice-bot-error"
+                    class="runtime-error is-hidden"
+                  ></div>
+
+                </div>
+
+              </div>
+
+              <div class="crt-controls">
+                <span class="crt-power-light"></span>
+                <span>CONVERSATION MONITOR</span>
+                <span
+                  class="ford-online-label hardware-online-label"
+                  id="identity-online-label"
+                >
+                  BOT ONLINE
+                </span>
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <div class="lower-dashboard-grid final-lower-grid final-lower-grid-v2">
+
+          <section class="ford-panel activity-panel hardware-module">
+
+            <header class="panel-title-row hardware-module-header">
+
+              <div>
+                <span class="panel-kicker">
+                  BOT CHANNEL
+                </span>
+
+                <h2>Live activity</h2>
+              </div>
+
+              <span
+                id="voice-activity-count"
+                class="event-counter"
+              >
+                0 events
+              </span>
+
+            </header>
+
+            <div class="activity-crt-shell">
+
+              <div class="crt-bezel">
+
+                <div class="crt-screen activity-crt">
+
+                  <div class="crt-scanlines"></div>
+
+                  <div class="activity-column-headings">
+                    <span>TIME</span>
+                    <span>SRC</span>
+                    <span>MESSAGE</span>
+                  </div>
+
+                  <div
+                    id="voice-activity-log"
+                    class="voice-activity-log"
+                  >
+                    <div class="voice-activity-empty">
+                      Waiting for voice activity...
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <section class="ford-panel system-panel hardware-module hardware-monitor-panel">
+
+            <header class="panel-title-row hardware-module-header">
+
+              <div>
+                <span class="panel-kicker">
+                  SYSTEM PERFORMANCE
+                </span>
+
+                <h2>Hardware Monitor</h2>
+              </div>
+
+              <div class="system-live-status">
+                <span class="system-live-light"></span>
+                <strong>LIVE</strong>
+
+                <small id="system-status-updated">
+                  Waiting...
+                </small>
+              </div>
+
+            </header>
+
+
+            <div class="system-led-console">
+
+              <div class="gpu-title-row">
+
+                <div>
+                  <span class="hardware-label">
+                    GPU
+                  </span>
+
+                  <strong id="system-gpu-name">
+                    Detecting GPU...
+                  </strong>
+                </div>
+
+                <span class="rtx-badge">
+                  RTX
+                </span>
+
+              </div>
+
+
+              <div class="system-led-meter">
+
+                <div class="meter-title">
+                  <span>GPU ACTIVITY</span>
+
+                  <strong id="system-gpu-util">
+                    0%
+                  </strong>
+                </div>
+
+                <div class="meter-track led-segment-track">
+                  <span
+                    id="system-gpu-util-bar"
+                    class="meter-fill gpu-meter-fill"
+                  ></span>
+                </div>
+
+              </div>
+
+
+              <div class="system-led-meter">
+
+                <div class="meter-title">
+                  <span>VRAM</span>
+
+                  <strong id="system-gpu-vram">
+                    --
+                  </strong>
+                </div>
+
+                <div class="meter-track led-segment-track">
+                  <span
+                    id="system-gpu-vram-bar"
+                    class="meter-fill vram-meter-fill"
+                  ></span>
+                </div>
+
+              </div>
+
+
+              <div class="cpu-memory-grid">
+
+                <div class="resource-card">
+
+                  <div class="resource-title">
+                    <span>CPU</span>
+
+                    <strong id="system-cpu-util">
+                      0%
+                    </strong>
+                  </div>
+
+                  <strong
+                    id="system-cpu-name"
+                    class="resource-name"
+                  >
+                    Detecting processor...
+                  </strong>
+
+                  <div class="meter-track led-segment-track">
+                    <span
+                      id="system-cpu-util-bar"
+                      class="meter-fill cpu-meter-fill"
+                    ></span>
+                  </div>
+
+                  <small id="system-cpu-detail">
+                    --
+                  </small>
+
+                </div>
+
+
+                <div class="resource-card">
+
+                  <div class="resource-title">
+                    <span>MEMORY</span>
+
+                    <strong id="system-ram-util">
+                      0%
+                    </strong>
+                  </div>
+
+                  <strong
+                    id="system-ram-used"
+                    class="resource-name"
+                  >
+                    Detecting memory...
+                  </strong>
+
+                  <div class="meter-track led-segment-track">
+                    <span
+                      id="system-ram-util-bar"
+                      class="meter-fill ram-meter-fill"
+                    ></span>
+                  </div>
+
+                  <small id="system-ram-total">
+                    --
+                  </small>
+
+                </div>
+
+              </div>
+
+
+              <div class="gpu-detail-grid hardware-readout-grid">
+
+                <div>
+                  <span>TEMP</span>
+                  <strong id="system-gpu-temp">--</strong>
+                </div>
+
+                <div>
+                  <span>POWER</span>
+                  <strong id="system-gpu-power">--</strong>
+                </div>
+
+                <div>
+                  <span>FAN</span>
+                  <strong id="system-gpu-fan">--</strong>
+                </div>
+
+                <div>
+                  <span>GPU CLOCK</span>
+                  <strong id="system-gpu-clock">--</strong>
+                </div>
+
+                <div>
+                  <span>MEM CLOCK</span>
+                  <strong id="system-gpu-memory-clock">--</strong>
+                </div>
+
+                <div>
+                  <span>DRIVER</span>
+                  <strong id="system-gpu-driver">--</strong>
+                </div>
+
+              </div>
+
+            </div>
+
+          </section>
+
+        </div>
+
+
+        <section class="diagnostics-strip hardware-diagnostics-strip">
+
+          <div class="diagnostic-item">
+            <span>VOICE INPUT</span>
+            <strong id="audio-current-speaker">
+              Waiting for voice
+            </strong>
+          </div>
+
+          <div class="diagnostic-item">
+            <span>PACKETS</span>
+            <strong id="audio-packet-count">
+              0
+            </strong>
+          </div>
+
+          <div class="diagnostic-item">
+            <span>RECEIVED</span>
+            <strong id="audio-byte-count">
+              0 B
+            </strong>
+          </div>
+
+          <div class="diagnostic-item">
+            <span>STREAMS</span>
+            <strong id="audio-stream-count">
+              0
+            </strong>
+          </div>
+
+          <div class="diagnostic-item">
+            <span>LAST SPEAKER</span>
+            <strong id="audio-last-speaker">
+              None yet
+            </strong>
+          </div>
+
+          <div class="diagnostic-item diagnostic-message">
+            <span>LAST MESSAGE</span>
+            <strong id="audio-last-details">
+              Waiting for incoming Zello audio.
+            </strong>
+          </div>
+
+        </section>
+
+      </div>
+    <!-- ==================================================
+         LEGACY SUPPORT DOM
+         Existing app.js still expects these IDs.
+         CSS keeps this area invisible.
+         ================================================== -->
+    <section class="legacy-support">
+
+      <section id="dashboard-section">
+        <span id="conversation-count">0</span>
+        <span id="qualified-lead-count">0</span>
+
+        <span id="platform-value">--</span>
+        <span id="electron-value">--</span>
+        <span id="node-value">--</span>
+        <span id="chrome-value">--</span>
+      </section>
+
+
+      <section id="conversations-section">
+
+        <div id="conversation-list"></div>
+
+        <span id="thread-channel"></span>
+        <span id="thread-customer"></span>
+        <span id="thread-status"></span>
+
+        <button
+          id="thread-lead-button"
+          type="button"
+        ></button>
+
+        <div id="message-list"></div>
+
+        <form id="message-form">
+          <input id="message-input">
+
+          <button
+            id="send-message-button"
+            type="submit"
+          ></button>
+        </form>
+
+      </section>
+
+
+      <section id="leads-section">
+
+        <table>
+          <tbody id="leads-table-body"></tbody>
+        </table>
+
+        <form id="lead-editor">
+
+          <input id="lead-editor-name">
+          <input id="lead-editor-source">
+
+          <select id="lead-behavior-mode">
+            <option value="chat">Chat</option>
+            <option value="banter">Banter</option>
+            <option value="roasting">Roasting</option>
+            <option value="aggressive">Aggressive</option>
+            <option value="extreme-aggressive">
+              Extreme Aggressive
+            </option>
+          </select>
+
+          <textarea id="lead-notes"></textarea>
+
+          <button
+            id="lead-open-conversation-button"
+            type="button"
+          ></button>
+
+          <button
+            id="lead-save-button"
+            type="submit"
+          ></button>
+
+        </form>
+
+      </section>
+
+
+      <section id="placeholder-section">
+        <span id="placeholder-title"></span>
+        <span id="placeholder-copy"></span>
+      </section>
+
+
+      <span id="zello-summary-channel">Not set</span>
+      <span id="zello-summary-bot">Not set</span>
+      <span id="zello-summary-password">Not set</span>
+      <span id="zello-summary-token">Not set</span>
+
+    </section>
+
+  </main>
+
+  <script src="./app.js"></script>
+
+</body>
+</html>
