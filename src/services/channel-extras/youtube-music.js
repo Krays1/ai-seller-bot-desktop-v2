@@ -8,24 +8,35 @@ import { parseWav } from './wav-utils.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.resolve(__dirname, '..');
 
+// The probe spawns synchronously; cache it so live audio (DJ mode) isn't stalled on every request
+let cachedLauncher = null;
+
 function getYtDlpLauncher(env = process.env) {
+  if (cachedLauncher) return cachedLauncher;
   const custom = (env.YT_DLP_PATH || '').trim();
   if (custom && fs.existsSync(custom)) {
-    return { command: custom, prefix: [] };
+    cachedLauncher = { command: custom, prefix: [] };
+    return cachedLauncher;
   }
 
   const onPath = spawnSync('yt-dlp', ['--version'], {
     encoding: 'utf8',
     windowsHide: true,
   });
-  if (onPath.status === 0) return { command: 'yt-dlp', prefix: [] };
+  if (onPath.status === 0) {
+    cachedLauncher = { command: 'yt-dlp', prefix: [] };
+    return cachedLauncher;
+  }
 
   const py = (env.PYTHON_PATH || 'python').trim() || 'python';
   const mod = spawnSync(py, ['-m', 'yt_dlp', '--version'], {
     encoding: 'utf8',
     windowsHide: true,
   });
-  if (mod.status === 0) return { command: py, prefix: ['-m', 'yt_dlp'] };
+  if (mod.status === 0) {
+    cachedLauncher = { command: py, prefix: ['-m', 'yt_dlp'] };
+    return cachedLauncher;
+  }
 
   throw new Error(
     'yt-dlp not found — run setup-youtube-music.bat or: pip install yt-dlp'
@@ -202,6 +213,70 @@ export class YouTubeMusicService {
       }));
   }
 
+  /** Same as search() without blocking the process (DJ mode streams from this thread). */
+  async searchAsync(query, limit = this.searchLimit) {
+    const q = String(query || '').trim();
+    if (!q) return [];
+    const n = Math.max(1, Math.min(10, limit));
+    const isUrl = /^https?:\/\//i.test(q);
+    const { stdout } = await runYtDlpAsync(
+      [
+        '--flat-playlist',
+        '--dump-single-json',
+        '--no-warnings',
+        '--no-playlist',
+        isUrl ? q : `ytsearch${n}:${q}`,
+      ],
+      this.env
+    );
+    const parsed = JSON.parse(stdout);
+    const entries = Array.isArray(parsed?.entries)
+      ? parsed.entries
+      : parsed?.id
+        ? [parsed]
+        : [];
+    return entries
+      .filter((e) => e?.id)
+      .map((e) => ({
+        id: e.id,
+        title: e.title || 'Unknown',
+        url: e.webpage_url || e.url || `https://www.youtube.com/watch?v=${e.id}`,
+        durationSec: Number(e.duration) || null,
+        channel: e.channel || e.uploader || '',
+      }));
+  }
+
+  /**
+   * Best match, downloaded in its original format (no 16 kHz conversion) —
+   * DJ mode decodes it itself at its own rate.
+   */
+  async prepareSource(query) {
+    const results = await this.searchAsync(query, this.searchLimit);
+    if (!results.length) throw new Error(`No YouTube result for "${query}"`);
+    const best = this.pickBest(results, query);
+    const audioPath = await this.downloadAudio(best.id, best.url);
+    return { ...best, audioPath, source: 'youtube' };
+  }
+
+  pickBest(results, query) {
+    const q = String(query || '').toLowerCase();
+    let best = results[0];
+    let bestScore = 0;
+    for (const row of results) {
+      const title = String(row.title || '').toLowerCase();
+      let score = 0;
+      if (title === q) score = 100;
+      else if (title.includes(q)) score = 80;
+      else if (q.split(/\s+/).every((w) => w.length > 2 && title.includes(w))) score = 70;
+      else score = 50 - results.indexOf(row);
+      if (score > bestScore) {
+        bestScore = score;
+        best = row;
+      }
+    }
+    return best;
+  }
+
   findBestMatch(query) {
     const results = this.search(query, this.searchLimit);
     if (!results.length) return null;
@@ -237,26 +312,31 @@ export class YouTubeMusicService {
     if (!id) throw new Error('Video id required');
     const watchUrl = url || `https://www.youtube.com/watch?v=${id}`;
     const base = path.join(this.cacheDir, id);
-    const existing = [`${base}.m4a`, `${base}.webm`, `${base}.opus`, `${base}.mp3`].find((p) =>
-      fs.existsSync(p)
-    );
+    const audioExtensions = [
+      '.m4a',
+      '.webm',
+      '.opus',
+      '.mp3',
+      '.ogg',
+      '.aac',
+      '.flac',
+      '.wav',
+      '.mp4',
+    ];
+    const existing = audioExtensions
+      .map((ext) => `${base}${ext}`)
+      .find((p) => fs.existsSync(p));
     if (existing) return existing;
 
     const outTemplate = `${base}.%(ext)s`;
     const launcher = getYtDlpLauncher(this.env);
     await new Promise((resolve, reject) => {
       const args = [
+        '--ignore-config',
         '--no-warnings',
         '--no-playlist',
         '-f',
         'bestaudio/best',
-        '-x',
-        '--audio-format',
-        'm4a',
-        // Only pull what we will play (long mixes) — saves time/disk
-        '--download-sections',
-        `*0-${this.maxDurationSec}`,
-        '--force-keyframes-at-cuts',
         '-o',
         outTemplate,
         watchUrl,
@@ -273,40 +353,6 @@ export class YouTubeMusicService {
       proc.on('close', (code) => {
         if (code === 0) resolve();
         else {
-          // Older yt-dlp may not support download-sections — retry full download
-          if (/download-sections|Unsupported/i.test(stderr)) {
-            const fallback = [
-              '--no-warnings',
-              '--no-playlist',
-              '-f',
-              'bestaudio/best',
-              '-x',
-              '--audio-format',
-              'm4a',
-              '-o',
-              outTemplate,
-              watchUrl,
-            ];
-            const p2 = spawn(launcher.command, [...launcher.prefix, ...fallback], {
-              windowsHide: true,
-              stdio: ['ignore', 'pipe', 'pipe'],
-            });
-            let err2 = '';
-            p2.stderr?.on('data', (c) => {
-              err2 += c;
-            });
-            p2.on('error', reject);
-            p2.on('close', (code2) => {
-              if (code2 === 0) resolve();
-              else
-                reject(
-                  new Error(
-                    err2.split('\n').slice(-4).join(' ') || 'Download failed'
-                  )
-                );
-            });
-            return;
-          }
           reject(
             new Error(stderr.split('\n').slice(-4).join(' ') || 'Download failed')
           );
@@ -314,9 +360,9 @@ export class YouTubeMusicService {
       });
     });
 
-    const downloaded = [`${base}.m4a`, `${base}.webm`, `${base}.opus`, `${base}.mp3`].find((p) =>
-      fs.existsSync(p)
-    );
+    const downloaded = audioExtensions
+      .map((ext) => `${base}${ext}`)
+      .find((p) => fs.existsSync(p));
     if (!downloaded) throw new Error('Download finished but audio file missing');
     return downloaded;
   }
@@ -341,7 +387,7 @@ export class YouTubeMusicService {
         return { ...match, wavPath, filename: `${match.id}.zello.wav`, source: 'youtube' };
       }
     }
-    convertAudioToZelloWav(audioPath, wavPath, this.env);
+    convertAudioToZelloWav(audioPath, wavPath, this.env, this.maxDurationSec);
     trimWavMaxDuration(wavPath, this.maxDurationSec, this.env);
     return { ...match, wavPath, filename: `${match.id}.zello.wav`, source: 'youtube' };
   }

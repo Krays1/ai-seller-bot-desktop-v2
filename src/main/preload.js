@@ -99,6 +99,12 @@ contextBridge.exposeInMainWorld('zelloBot', {
     disconnect: () =>
       ipcRenderer.invoke(
         'zello:disconnect'
+      ),
+
+    setConstantRequests: (payload) =>
+      ipcRenderer.invoke(
+        'zello:constant-requests',
+        payload || {}
       )
   },
 
@@ -141,11 +147,57 @@ contextBridge.exposeInMainWorld('zelloBot', {
       )
   },
 
+  voiceChanger: {
+    info: () => ipcRenderer.invoke('voice-changer:info'),
+    health: () => ipcRenderer.invoke('voice-changer:health'),
+    start: (opts) => ipcRenderer.invoke('voice-changer:start', opts || {}),
+    pushPcm: (sessionId, bytes) =>
+      ipcRenderer.send('voice-changer:pcm', sessionId, bytes),
+    stop: (sessionId) => ipcRenderer.invoke('voice-changer:stop', sessionId),
+    savePrefs: (prefs) => ipcRenderer.invoke('voice-changer:save-prefs', prefs || {}),
+    openFolder: () => ipcRenderer.invoke('voice-changer:open-folder'),
+    onStatus: (callback) => {
+      if (typeof callback !== 'function') return () => {};
+      const listener = (_event, status) => callback(status);
+      ipcRenderer.on('voice-changer:status', listener);
+      return () => ipcRenderer.removeListener('voice-changer:status', listener);
+    },
+    onOutput: (callback) => {
+      if (typeof callback !== 'function') return () => {};
+      const listener = (_event, pcm) => callback(pcm);
+      ipcRenderer.on('voice-changer:output', listener);
+      return () => ipcRenderer.removeListener('voice-changer:output', listener);
+    }
+  },
+
+  dj: {
+    info: (opts) => ipcRenderer.invoke('dj:info', opts || {}),
+    status: () => ipcRenderer.invoke('dj:status'),
+    start: (opts) => ipcRenderer.invoke('dj:start', opts || {}),
+    stop: () => ipcRenderer.invoke('dj:stop'),
+    pushPcm: (sessionId, bytes) => ipcRenderer.send('dj:pcm', sessionId, bytes),
+    setSource: (source) => ipcRenderer.invoke('dj:set-source', source),
+    say: (payload) => ipcRenderer.invoke('dj:say', payload || {}),
+    cancelLine: (id) => ipcRenderer.invoke('dj:cancel-line', id),
+    savePrefs: (prefs) => ipcRenderer.invoke('dj:save-prefs', prefs || {}),
+    addSong: (query) => ipcRenderer.invoke('dj:add-song', query),
+    addFile: () => ipcRenderer.invoke('dj:add-file'),
+    skip: () => ipcRenderer.invoke('dj:skip'),
+    onStatus: (callback) => {
+      if (typeof callback !== 'function') return () => {};
+      const listener = (_event, status) => callback(status);
+      ipcRenderer.on('dj:status', listener);
+      return () => ipcRenderer.removeListener('dj:status', listener);
+    }
+  },
+
   llm: {
     resolve: () =>
       ipcRenderer.invoke('llm:resolve'),
     snapshot: (options) =>
       ipcRenderer.invoke('llm:snapshot', options || {}),
+    models: (options) =>
+      ipcRenderer.invoke('llm:models', options || {}),
     clearCache: () =>
       ipcRenderer.invoke('llm:clear-cache')
   },

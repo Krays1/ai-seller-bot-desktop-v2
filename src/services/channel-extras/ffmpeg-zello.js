@@ -44,7 +44,12 @@ export function resolveFfmpegExecutable(env = process.env) {
   );
 }
 
-export function convertAudioToZelloWav(srcPath, destPath, env = process.env) {
+export function convertAudioToZelloWav(
+  srcPath,
+  destPath,
+  env = process.env,
+  maxDurationSec = 0
+) {
   if (!srcPath || !fs.existsSync(srcPath)) {
     throw new Error('Audio file not found');
   }
@@ -62,6 +67,7 @@ export function convertAudioToZelloWav(srcPath, destPath, env = process.env) {
       '1',
       '-sample_fmt',
       's16',
+      ...(maxDurationSec > 0 ? ['-t', String(maxDurationSec)] : []),
       path.resolve(destPath),
     ],
     { encoding: 'utf8' }

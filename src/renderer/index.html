@@ -32,6 +32,7 @@
 
     <nav class="nav" aria-label="Main">
       <button type="button" class="nav-btn is-active" data-view="live">Live</button>
+      <button type="button" class="nav-btn" data-view="voice-changer">Voice Changer</button>
       <button type="button" class="nav-btn" data-view="roster">Roster</button>
       <button type="button" class="nav-btn" data-view="channels">Channels</button>
       <button type="button" class="nav-btn" data-view="engines">Engines</button>
@@ -50,12 +51,118 @@
             <p class="live-error is-hidden" id="live-error"></p>
           </article>
           <article class="panel live-compose">
-            <header class="panel-head"><h2>Speak as bot</h2></header>
+            <header class="panel-head">
+              <h2>Speak as bot</h2>
+              <div class="panel-head-actions">
+                <button type="button" class="btn" id="btn-anonymous-listen" title="OFF = normal named login (username + password + JWT). ON = Friends &amp; Family anonymous listen-only: JWT only, no username/password. Channel must allow anonymous access. Reconnects when toggled.">Auth: Normal</button>
+                <button type="button" class="btn" id="btn-grab-mode" title="Click to cycle: Off → Grab + reply (key up the instant the channel is free and hold while the reply builds) → Grab only (win the button, hold 1.5 s of silence, no reply)">Grab: OFF</button>
+              </div>
+            </header>
             <div class="compose-row">
               <select id="speak-as-bot"></select>
               <textarea id="speak-text" rows="2" placeholder="Type a line, then Speak on channel (Ctrl+Enter)"></textarea>
               <button type="button" class="btn primary" id="btn-speak-text">Speak on channel</button>
             </div>
+            <div class="compose-row constant-row">
+              <select id="constant-bot" title="The one bot that keeps requesting the button (no other bot is ever used)"></select>
+              <span class="meta" id="constant-status">Off</span>
+              <button type="button" class="btn" id="btn-constant-requests" title="ON: the chosen bot fires button requests non-stop, holds the channel silently, re-grabs at once if keyed off, and steps aside only when that same bot speaks. Always starts OFF.">Constant requests: OFF</button>
+            </div>
+          </article>
+          <article class="panel live-dj" id="dj-panel">
+            <header class="panel-head">
+              <h2>DJ mode</h2>
+              <span class="dj-onair" id="dj-onair">OFF AIR</span>
+            </header>
+            <div class="dj-setup">
+              <label class="field">
+                <span class="field-label">DJ as bot</span>
+                <select id="dj-bot"></select>
+              </label>
+              <label class="field">
+                <span class="field-label">Music from</span>
+                <select id="dj-source">
+                  <option value="device">Audio input / virtual cable (recommended)</option>
+                  <option value="system">Whole PC sound (loopback)</option>
+                  <option value="app">App music — YouTube &amp; files</option>
+                </select>
+              </label>
+              <label class="field" id="dj-device-field">
+                <span class="field-label">Input device</span>
+                <select id="dj-device"></select>
+              </label>
+              <label class="field">
+                <span class="field-label">Quality</span>
+                <select id="dj-rate" title="Opus sample rate for DJ streams only — everything else stays 16 kHz">
+                  <option value="16000">16 kHz — same as bot voices</option>
+                  <option value="24000">24 kHz — music (default)</option>
+                  <option value="48000">48 kHz — best, more data</option>
+                </select>
+              </label>
+              <button type="button" class="btn primary dj-start" id="btn-dj">Start DJ</button>
+            </div>
+            <p class="hint dj-source-hint" id="dj-source-hint"></p>
+            <div class="dj-app is-hidden" id="dj-app">
+              <div class="dj-app-row">
+                <input type="text" id="dj-song" placeholder="Song name or YouTube link, then Enter">
+                <button type="button" class="btn" id="dj-add-song">Add</button>
+                <button type="button" class="btn" id="dj-add-file" title="Add MP3 / WAV / M4A … files from this PC">Add file…</button>
+                <button type="button" class="btn" id="dj-skip">Skip</button>
+              </div>
+              <p class="meta" id="dj-now">Nothing playing</p>
+            </div>
+            <div class="dj-mix">
+              <label class="dj-slider"><span>Music <b id="dj-music-val">80%</b></span><input type="range" id="dj-music" min="0" max="150" step="1"></label>
+              <label class="dj-slider"><span>Duck to <b id="dj-duck-val">20%</b></span><input type="range" id="dj-duck" min="0" max="100" step="1"></label>
+              <label class="dj-slider"><span>Voice <b id="dj-voicevol-val">100%</b></span><input type="range" id="dj-voicevol" min="0" max="150" step="1"></label>
+              <div class="dj-meters">
+                <div class="dj-meter-row"><small>Input</small><div class="vc-meter"><div class="vc-meter-fill" id="dj-meter-in"></div></div></div>
+                <div class="dj-meter-row"><small>On air</small><div class="vc-meter"><div class="vc-meter-fill" id="dj-meter-out"></div></div></div>
+                <p class="meta" id="dj-state">Off</p>
+              </div>
+            </div>
+            <div class="dj-talk">
+              <select id="dj-voice" title="Talkover TTS voice (typed lines)"></select>
+              <input type="text" id="dj-say" placeholder="Talkover — type a line and press Enter (mixed over the music)">
+              <button type="button" class="btn primary" id="btn-dj-say">Say</button>
+            </div>
+            <div class="dj-live-talk">
+              <div class="dj-live-talk-setup">
+                <label class="field">
+                  <span class="field-label">Talk mode</span>
+                  <select id="dj-vc-mode" title="Live converts while you hold. Speak then repeat records you, then says it back in the chosen voice over the music.">
+                    <option value="live">Live — convert while you talk</option>
+                    <option value="repeat">Speak then repeat — talk, release, sends in that voice</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span class="field-label">Voice (Seed-VC / effect)</span>
+                  <select id="dj-vc-voice" title="Voice used when you hold the bar and talk over the music"></select>
+                </label>
+                <label class="field">
+                  <span class="field-label">Talk mic</span>
+                  <select id="dj-vc-device" title="Your microphone for hold-to-talk (not the music cable)"></select>
+                </label>
+              </div>
+              <button type="button" class="dj-ptt" id="dj-ptt" disabled>
+                <strong id="dj-ptt-label">Hold to talk over music</strong>
+                <small id="dj-ptt-hint">Start DJ first · Space works while Live is open</small>
+              </button>
+              <div class="dj-ptt-meter vc-meter"><div class="vc-meter-fill" id="dj-ptt-meter"></div></div>
+            </div>
+            <div class="dj-quick" id="dj-quick"></div>
+            <details class="dj-edit">
+              <summary>Edit quick lines, DJ name &amp; intro</summary>
+              <div class="dj-edit-grid" id="dj-quick-edit"></div>
+              <div class="dj-edit-grid">
+                <label>DJ name <input type="text" id="dj-name" placeholder="e.g. DJ Dave"></label>
+                <label>Intro line (said when DJ starts, {name} = DJ name) <input type="text" id="dj-intro" placeholder="This is {name}, live on the channel!"></label>
+                <label>Refresh stream every (sec, 10–85) <input type="number" id="dj-refresh" min="10" max="85" step="1"></label>
+              </div>
+              <button type="button" class="btn" id="dj-edit-save">Save lines</button>
+            </details>
+            <div class="dj-lines" id="dj-lines"></div>
+            <p class="live-error is-hidden" id="dj-error"></p>
           </article>
           <article class="panel live-activity">
             <header class="panel-head">
@@ -73,6 +180,79 @@
               <div><small>Processing</small><strong id="diag-processing">No</strong></div>
             </div>
           </details>
+        </div>
+      </section>
+
+      <section class="view" id="view-voice-changer" data-view="voice-changer">
+        <div class="vc-grid">
+          <article class="panel vc-setup">
+            <header class="panel-head">
+              <h2>Voice changer</h2>
+              <span class="meta"><span class="dot" id="vc-conv-dot"></span> <span id="vc-conv-status">Converter: —</span></span>
+            </header>
+            <div class="vc-fields">
+              <label class="field">
+                <span class="field-label">Talk as bot</span>
+                <select id="vc-bot"></select>
+              </label>
+              <label class="field">
+                <span class="field-label">Voice</span>
+                <div class="vc-inline">
+                  <select id="vc-voice"></select>
+                  <button type="button" class="btn" id="vc-open-folder" title="Add .wav clips (5–15 s of one clear voice) to this folder, then Reload">Folder</button>
+                  <button type="button" class="btn" id="vc-reload" title="Reload bots, voices and converter status">Reload</button>
+                </div>
+              </label>
+              <label class="field field-wide">
+                <span class="field-label">Mode</span>
+                <select id="vc-mode">
+                  <option value="live">Live voice changer — converts while you talk</option>
+                  <option value="repeat">Speak then repeat — record, then the bot says it in the voice (fallback)</option>
+                </select>
+              </label>
+              <label class="field">
+                <span class="field-label">Microphone</span>
+                <select id="vc-device"></select>
+              </label>
+              <label class="field">
+                <span class="field-label">Push-to-talk key</span>
+                <div class="vc-inline">
+                  <input type="text" id="vc-key" readonly>
+                  <button type="button" class="btn" id="vc-key-set">Change</button>
+                </div>
+              </label>
+            </div>
+            <div class="vc-meter" title="Microphone level"><div class="vc-meter-fill" id="vc-meter"></div></div>
+            <div class="toggle-list vc-toggles">
+              <label class="toggle" for="vc-monitor">
+                <input type="checkbox" id="vc-monitor">
+                <span class="toggle-text">
+                  <strong>Hear myself</strong>
+                  <small>Play your raw mic in your speakers/headphones (use headphones)</small>
+                </span>
+              </label>
+              <label class="toggle" for="vc-test">
+                <input type="checkbox" id="vc-test">
+                <span class="toggle-text">
+                  <strong>Test (don't send)</strong>
+                  <small>Run the full path but play the result here instead of transmitting</small>
+                </span>
+              </label>
+            </div>
+            <p class="hint">Voices list only clips in <code>voice changer voices</code>. Robot and pitch effects are instant and need no server.</p>
+          </article>
+          <article class="panel vc-talk">
+            <header class="panel-head">
+              <h2>Push to talk</h2>
+              <span class="meta" id="vc-latency">—</span>
+            </header>
+            <button type="button" class="vc-ptt" id="vc-ptt">
+              <strong id="vc-ptt-label">Hold to talk</strong>
+              <small id="vc-ptt-hint">or hold Space while this tab is open</small>
+            </button>
+            <p class="vc-status" id="vc-status">Idle</p>
+            <p class="live-error is-hidden" id="vc-error"></p>
+          </article>
         </div>
       </section>
 
@@ -106,6 +286,7 @@
                 <th>Channel</th>
                 <th>Voice</th>
                 <th>Status</th>
+                <th title="Zello login token — expiry date, or rejected by Zello">Token</th>
               </tr>
             </thead>
             <tbody id="roster-body"></tbody>
@@ -163,7 +344,13 @@
             </label>
             <label>This PC URL<input id="ollama-url-this" type="text"></label>
             <label>Other PC URL<input id="ollama-url-other" type="text"></label>
-            <label>Model<input id="ollama-model" type="text"></label>
+            <label>Model
+              <div class="compose-row tight" style="margin-top:0">
+                <select id="ollama-model" title="Models installed on the active brain PC"></select>
+                <button type="button" class="btn" id="btn-refresh-models" title="Reload models from the active brain PC">Refresh</button>
+              </div>
+              <span class="meta" id="ollama-model-status">—</span>
+            </label>
             <div class="compose-row tight">
               <button type="button" class="btn" id="btn-probe-brain">Probe brain</button>
               <span class="meta" id="brain-probe-result">—</span>
@@ -175,6 +362,20 @@
             <label>OmniVoice URL<input id="omnivoice-url" type="text"></label>
             <label>Default voice<input id="omnivoice-voice" type="text" list="voice-datalist"></label>
             <datalist id="voice-datalist"></datalist>
+            <label class="toggle" for="auto-capture-voices">
+              <input type="checkbox" id="auto-capture-voices">
+              <span class="toggle-text">
+                <strong>Auto-save new speakers' voices</strong>
+                <small>When someone without a voice keys up, collect ~12s of their speech and add it to the voice list under their Zello name</small>
+              </span>
+            </label>
+            <label class="toggle" for="auto-switch-new-voice">
+              <input type="checkbox" id="auto-switch-new-voice">
+              <span class="toggle-text">
+                <strong>Switch a bot to each new voice</strong>
+                <small>When a new speaker's voice is auto-saved, one random joined bot on that channel starts talking in it</small>
+              </span>
+            </label>
             <div class="compose-row tight">
               <button type="button" class="btn" id="btn-probe-stt">Probe STT</button>
               <button type="button" class="btn" id="btn-probe-tts">Probe OmniVoice</button>
@@ -240,21 +441,21 @@
                   </label>
                   <label class="field">
                     <span class="field-label">Bot speak target (sec)</span>
-                    <span class="field-help">Aim for replies about this long</span>
-                    <input id="bot-speak-sec" type="number" min="1" max="60">
+                    <span class="field-help">Aim for replies about this long (5–90)</span>
+                    <input id="bot-speak-sec" type="number" min="5" max="90" step="1">
                   </label>
                 </div>
               </section>
 
               <section class="fight-section fight-mode">
                 <h3>Channel mode</h3>
-                <p class="hint">Listening always transcribes into Heard. Auto reply is optional on top.</p>
+                <p class="hint">Listening always transcribes into Heard. Auto reply is optional on top. These still use named logins (username + password). For JWT-only anonymous listen, use <strong>Auth</strong> on the Live tab.</p>
                 <div class="mode-cards">
                   <label class="mode-card" for="mode-listen">
                     <input type="radio" name="channel-mode" id="mode-listen" value="listen">
                     <span class="mode-card-body">
                       <strong>Listen only</strong>
-                      <small>Transcribe everyone into Heard. Bots do not seize or answer (Speak-as still works).</small>
+                      <small>Named bots still log in. Transcribe into Heard; no seize/answer (Speak-as still works).</small>
                     </span>
                   </label>
                   <label class="mode-card" for="mode-reply">
@@ -322,6 +523,8 @@
   <script src="./ui/roster.js"></script>
   <script src="./ui/channels.js"></script>
   <script src="./ui/engines.js"></script>
+  <script src="./ui/voice-changer.js"></script>
+  <script src="./ui/dj.js"></script>
   <script src="./app.js"></script>
 </body>
 </html>

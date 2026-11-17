@@ -39,6 +39,7 @@
     window.V2.setDot('dot-zello', connected ? 'on' : 'off');
     $('btn-disconnect').disabled = !connected;
     window.V2.roster?.updateStatuses?.(status);
+    window.V2.live?.applyConstantStatus?.(status);
 
     if ($('diag-listen-channel')) {
       $('diag-listen-channel').textContent =
@@ -209,6 +210,8 @@
     window.V2.roster.render(settings);
     window.V2.channels.render(settings);
     window.V2.engines.fill(settings);
+    window.V2.voiceChanger?.fill(settings);
+    window.V2.dj?.fill(settings);
     const botN = (settings?.bots || []).length;
     if ($('runtime-label')) {
       $('runtime-label').textContent =
@@ -277,6 +280,8 @@
     window.V2.roster.bind();
     window.V2.channels.bind();
     window.V2.engines.bind();
+    window.V2.voiceChanger?.bind();
+    window.V2.dj?.bind();
     bindNav();
 
     $('btn-connect')?.addEventListener('click', () => connectBots());
@@ -290,6 +295,12 @@
     if (api.voiceBot?.onStatusChanged) {
       api.voiceBot.onStatusChanged((status) => {
         window.V2.live.applyVoiceStatus(status);
+        if (status?.botVoiceChanged) {
+          window.V2.roster.applyBotVoiceChange(status.botVoiceChanged);
+        }
+        if (status?.voicesChanged) {
+          probeTts({ loadVoices: true });
+        }
       });
     }
 

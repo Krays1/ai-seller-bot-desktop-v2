@@ -52,7 +52,8 @@ export function formatFullCommandsList() {
     'Hangman — bot start hangman · Dave guess e · bot solve WORD',
     'Blackjack — bot start blackjack · bot hit · bot stick',
     'Connect 4 — bot start connect 4 · bot drop 4',
-    'Music — bot play SONG · Sugar play SONG · bot stop (max 5 min; key-up stops)',
+    'Music — play SONG · put on SONG · Sugar play SONG · stop the music (no name needed; max 5 min; key-up stops)',
+    'Voice — switch to Tommy · Sugar change your voice to abby · Alex talk like trump (no name = last bot that spoke)',
     'Help — bot commands · Sugar commands'
   ].join('\n');
 }
@@ -515,36 +516,62 @@ export async function handleExtrasCommand({
       }
     }
     if (ytCmd.action === 'play') {
-      try {
-        const track = await s.youtube.prepareQuery(ytCmd.query);
-        let thumb = null;
-        try {
-          thumb = await s.youtube.prepareThumbnail?.(track.id);
-        } catch {
-          /* optional */
-        }
-        return {
-          handled: true,
-          // Short channel text only — no spoken intro; audio is the song
-          text: `Playing: ${track.title}`,
-          wavPath: track.wavPath,
-          image: thumb
-            ? {
-                buffer: thumb.imageBuffer,
-                thumbnailBuffer: thumb.thumbnailBuffer,
-                width: thumb.width,
-                height: thumb.height
-              }
-            : null
-        };
-      } catch (err) {
-        return {
-          handled: true,
-          text: `Play failed: ${err.message}`
-        };
-      }
+      return handleYouTubePlay({ query: ytCmd.query });
     }
   }
 
   return null;
+}
+
+/** DJ mode: best YouTube match downloaded in its original format → { title, audioPath }. */
+export async function prepareYouTubeSource({ query } = {}) {
+  const q = String(query || '').trim();
+  if (!q) throw new Error('No song name given.');
+  if (!isYouTubeMusicReady(process.env)) {
+    throw new Error('YouTube needs yt-dlp — run setup-youtube-music.bat (or pip install yt-dlp).');
+  }
+  return getStores().youtube.prepareSource(q);
+}
+
+/** Search YouTube for `query`, download + convert; never routes through the game parsers. */
+export async function handleYouTubePlay({ query } = {}) {
+  const q = String(query || '').trim();
+  if (!q) return null;
+  if (!isYouTubeMusicReady(process.env)) {
+    return {
+      handled: true,
+      text:
+        'YouTube needs yt-dlp. Run: pip install yt-dlp  (and have ffmpeg on PATH).',
+      speak: 'YouTube is not set up. Install yt-dlp first.'
+    };
+  }
+  const s = getStores();
+  try {
+    const track = await s.youtube.prepareQuery(q);
+    let thumb = null;
+    try {
+      thumb = await s.youtube.prepareThumbnail?.(track.id);
+    } catch {
+      /* optional */
+    }
+    return {
+      handled: true,
+      // Short channel text only — no spoken intro; audio is the song
+      text: `Playing: ${track.title}`,
+      wavPath: track.wavPath,
+      image: thumb
+        ? {
+            buffer: thumb.imageBuffer,
+            thumbnailBuffer: thumb.thumbnailBuffer,
+            width: thumb.width,
+            height: thumb.height
+          }
+        : null
+    };
+  } catch (err) {
+    return {
+      handled: true,
+      text: `Play failed: ${err.message}`
+    };
+  }
 }

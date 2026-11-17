@@ -24,6 +24,33 @@ const OUTPUT_FRAME_SAMPLES =
 const OUTPUT_FRAME_BYTES =
   OUTPUT_FRAME_SAMPLES * 2;
 
+/** Opus rates the codec_header may carry (Zello decoders handle all of them). */
+const OPUS_RATES = [8000, 12000, 16000, 24000, 48000];
+
+// Server events we already understand; anything else seen mid-transmit is reported for logging
+const KNOWN_SERVER_EVENTS = new Set([
+  'on_channel_status',
+  'on_stream_start',
+  'on_stream_stop',
+  'on_text_message',
+  'on_image',
+  'on_location',
+  'on_transcription',
+  'on_dispatch_call_status',
+  'on_error'
+]);
+
+function summarizeServerMessage(message) {
+  try {
+    const text = JSON.stringify(message, (key, value) =>
+      /token|password|secret|key/i.test(key) ? '[hidden]' : value
+    );
+    return text.length > 300 ? text.slice(0, 300) + '…' : text;
+  } catch {
+    return '(unreadable message)';
+  }
+}
+
 class ZelloRuntimeService {
   constructor(
     settingsStore,
@@ -48,11 +75,20 @@ class ZelloRuntimeService {
 
     this.txAbortRequested = false;
     this.foreignStreamStartHandler = null;
+    this.foreignStreamStopHandler = null;
+    /** @type {Map<number, { from: string, channel: string }>} on_stream_stop has no sender */
+    this.remoteStreamInfo = new Map();
     this.textMessageHandler = null;
     this.imageMessageHandler = null;
     /** @type {Map<number, { messageId: number, channel: string, from: string, thumbnail: Buffer|null, full: Buffer|null, startedAt: number }>} */
     this.activeImages = new Map();
     this._imageFinalizeTimers = new Map();
+    /** Our live outgoing stream ({ streamId, lost }) while sendPcmHoldingWhile runs */
+    this.outgoing = null;
+    this.txEventHandler = null;
+
+    /** When true, logon uses JWT only + listen_only (no username/password). */
+    this.anonymousListen = false;
 
     this.state = {
       status: 'disconnected',
@@ -61,6 +97,7 @@ class ZelloRuntimeService {
       channelStatus: 'offline',
       usersOnline: 0,
       transmitting: false,
+      anonymousListen: false,
       lastError: '',
       lastEventAt:
         new Date().toISOString()
@@ -72,9 +109,100 @@ class ZelloRuntimeService {
       typeof handler === 'function' ? handler : null;
   }
 
+  setForeignStreamStopHandler(handler) {
+    this.foreignStreamStopHandler =
+      typeof handler === 'function' ? handler : null;
+  }
+
   setTextMessageHandler(handler) {
     this.textMessageHandler =
       typeof handler === 'function' ? handler : null;
+  }
+
+  /** Receives { type: 'floor-lost' | 'server-message', ... } while we transmit. */
+  setTxEventHandler(handler) {
+    this.txEventHandler =
+      typeof handler === 'function' ? handler : null;
+  }
+
+  emitTxEvent(event) {
+    if (typeof this.txEventHandler !== 'function') return;
+    try {
+      this.txEventHandler(event);
+    } catch {
+      /* ignore */
+    }
+  }
+
+  /** Flag the current outgoing stream as no longer ours (someone took the button). */
+  markFloorLost(info = {}) {
+    const out = this.outgoing;
+    if (!out || out.lost) return;
+    out.lost = { ...info, at: Date.now() };
+    this.emitTxEvent({
+      type: 'floor-lost',
+      streamId: out.streamId,
+      ...out.lost
+    });
+  }
+
+  /** Watch server traffic for signs our outgoing stream was cut. */
+  watchOutgoing(message) {
+    const out = this.outgoing;
+    if (!out || !message || typeof message !== 'object') return;
+    const hasSeq = Number.isInteger(message.seq);
+    if (hasSeq && this.pendingRequests.has(message.seq)) return;
+
+    const command = String(message.command || '');
+    const me = String(this.state.botUsername || '').trim().toLowerCase();
+
+    if (command === 'on_stream_start') {
+      const from = String(message.from || '').trim();
+      if (
+        from &&
+        from.toLowerCase() !== me &&
+        message.stream_id !== out.streamId
+      ) {
+        this.markFloorLost({
+          reason: 'foreign-start',
+          from,
+          foreignStreamId: message.stream_id
+        });
+      }
+      return;
+    }
+    if (command === 'on_stream_stop') {
+      if (message.stream_id === out.streamId) {
+        this.markFloorLost({ reason: 'stream-stopped' });
+      }
+      return;
+    }
+    if (command === 'on_error') {
+      this.markFloorLost({
+        reason: 'server-error',
+        error: String(message.error || 'unknown error')
+      });
+      return;
+    }
+    if (command === 'on_channel_status') {
+      if (message.status && message.status !== 'online') {
+        this.markFloorLost({
+          reason: 'channel-offline',
+          error: String(message.error || message.status)
+        });
+      }
+      return;
+    }
+    if (KNOWN_SERVER_EVENTS.has(command)) return;
+
+    this.emitTxEvent({
+      type: 'server-message',
+      text: summarizeServerMessage(message)
+    });
+    // Unsolicited error (no command reply) mid-stream: treat as losing the button
+    if (!hasSeq && typeof message.error === 'string' && message.error) {
+      this.markFloorLost({ reason: 'server-error', error: message.error });
+    }
   }
 
   setImageMessageHandler(handler) {
@@ -128,22 +256,6 @@ class ZelloRuntimeService {
   }
 
   readCredentials(override) {
-    if (
-      override &&
-      typeof override === 'object' &&
-      override.channelName &&
-      override.botUsername &&
-      override.password &&
-      override.token
-    ) {
-      return {
-        channelName: String(override.channelName).trim(),
-        botUsername: String(override.botUsername).trim(),
-        password: String(override.password),
-        token: String(override.token).trim()
-      };
-    }
-
     const settings =
       this.settingsStore.read();
 
@@ -154,6 +266,60 @@ class ZelloRuntimeService {
         'object'
         ? settings.zello
         : {};
+
+    const anonymousListen =
+      (override &&
+        typeof override === 'object' &&
+        override.anonymousListen === true) ||
+      zello.anonymousListen === true;
+
+    if (
+      override &&
+      typeof override === 'object' &&
+      override.channelName &&
+      override.token
+    ) {
+      const channelName = String(override.channelName).trim();
+      const token = String(override.token).trim();
+      if (!channelName) {
+        throw new Error('No active Zello channel is configured.');
+      }
+      if (!token) {
+        throw new Error(
+          'No Zello authentication token is configured.'
+        );
+      }
+      if (anonymousListen) {
+        const label =
+          String(override.botUsername || '').trim() ||
+          '(anonymous)';
+        return {
+          channelName,
+          botUsername: label,
+          password: '',
+          token,
+          anonymousListen: true
+        };
+      }
+      const botUsername = String(override.botUsername || '').trim();
+      const password =
+        typeof override.password === 'string'
+          ? override.password
+          : '';
+      if (!botUsername) {
+        throw new Error('No Zello bot username is configured.');
+      }
+      if (!password) {
+        throw new Error('No Zello bot password is configured.');
+      }
+      return {
+        channelName,
+        botUsername,
+        password,
+        token,
+        anonymousListen: false
+      };
+    }
 
     const channelName =
       typeof zello.channelName ===
@@ -185,6 +351,22 @@ class ZelloRuntimeService {
       );
     }
 
+    if (!token) {
+      throw new Error(
+        'No Zello authentication token is configured.'
+      );
+    }
+
+    if (anonymousListen) {
+      return {
+        channelName,
+        botUsername: botUsername || '(anonymous)',
+        password: '',
+        token,
+        anonymousListen: true
+      };
+    }
+
     if (!botUsername) {
       throw new Error(
         'No Zello bot username is configured.'
@@ -197,17 +379,12 @@ class ZelloRuntimeService {
       );
     }
 
-    if (!token) {
-      throw new Error(
-        'No Zello authentication token is configured.'
-      );
-    }
-
     return {
       channelName,
       botUsername,
       password,
-      token
+      token,
+      anonymousListen: false
     };
   }
 
@@ -235,6 +412,9 @@ class ZelloRuntimeService {
         credentialsOverride
       );
 
+    this.anonymousListen =
+      credentials.anonymousListen === true;
+
     this.cleanupSocket();
 
     this.setState({
@@ -247,6 +427,8 @@ class ZelloRuntimeService {
         'offline',
       usersOnline: 0,
       transmitting: false,
+      anonymousListen:
+        this.anonymousListen,
       lastError: ''
     });
 
@@ -298,40 +480,26 @@ class ZelloRuntimeService {
                 return;
               }
 
-              socket.send(
-                JSON.stringify({
-                  command: 'logon',
-                  seq:
-                    this.nextSequence(),
-
-                  auth_token:
-                    credentials.token,
-
-                  username:
-                    credentials
-                      .botUsername,
-
-                  password:
-                    credentials.password,
-
-                  channels: [
-                    credentials
-                      .channelName
-                  ],
-
-                  features: {
-                    transcriptions:
-                      true
-                  },
-
-                  version: '2.0',
-                  platform_type:
-                    'desktop',
-
-                  platform_name:
-                    'Zello Bot Desktop 2.0'
-                })
-              );
+              const logon = {
+                command: 'logon',
+                seq: this.nextSequence(),
+                auth_token: credentials.token,
+                channels: [credentials.channelName],
+                features: {
+                  transcriptions: true
+                },
+                version: '2.0',
+                platform_type: 'desktop',
+                platform_name: 'Zello Bot Desktop 2.0'
+              };
+              if (credentials.anonymousListen) {
+                // F&F anonymous: JWT only, no username/password
+                logon.listen_only = true;
+              } else {
+                logon.username = credentials.botUsername;
+                logon.password = credentials.password;
+              }
+              socket.send(JSON.stringify(logon));
             }
           );
 
@@ -488,6 +656,8 @@ class ZelloRuntimeService {
       return;
     }
 
+    this.watchOutgoing(message);
+
     if (
       Number.isInteger(
         message.seq
@@ -608,13 +778,26 @@ class ZelloRuntimeService {
         return;
       }
 
+      if (Number.isInteger(message.stream_id)) {
+        this.remoteStreamInfo.set(message.stream_id, {
+          from: String(message.from || ''),
+          channel: String(message.channel || '')
+        });
+        if (this.remoteStreamInfo.size > 50) {
+          this.remoteStreamInfo.delete(
+            this.remoteStreamInfo.keys().next().value
+          );
+        }
+      }
+
       if (
         typeof this.foreignStreamStartHandler ===
         'function'
       ) {
         try {
           this.foreignStreamStartHandler(
-            message.from
+            message.from,
+            message.channel
           );
         } catch {
           /* ignore */
@@ -653,6 +836,27 @@ class ZelloRuntimeService {
       message.command ===
         'on_stream_stop'
     ) {
+      const info =
+        this.remoteStreamInfo.get(message.stream_id) || null;
+      this.remoteStreamInfo.delete(message.stream_id);
+
+      // Fires before any decode/STT so grab mode can key up in the same tick
+      if (
+        info &&
+        typeof this.foreignStreamStopHandler ===
+        'function'
+      ) {
+        try {
+          this.foreignStreamStopHandler({
+            streamId: message.stream_id,
+            from: info.from,
+            channel: info.channel || this.state.channelName
+          });
+        } catch {
+          /* ignore */
+        }
+      }
+
       if (
         this.audioPipelineService
       ) {
@@ -1045,12 +1249,16 @@ class ZelloRuntimeService {
     );
   }
 
-  createOutputCodecHeader() {
+  /** {sample_rate_hz(16LE), frames_per_packet, frame_size_ms} — see Zello API.md. */
+  createOutputCodecHeader(
+    sampleRate = OUTPUT_SAMPLE_RATE,
+    frameSizeMs = 60
+  ) {
     const header =
       Buffer.alloc(4);
 
     header.writeUInt16LE(
-      OUTPUT_SAMPLE_RATE,
+      sampleRate,
       0
     );
 
@@ -1060,7 +1268,7 @@ class ZelloRuntimeService {
     );
 
     header.writeUInt8(
-      60,
+      frameSizeMs,
       3
     );
 
@@ -1069,8 +1277,59 @@ class ZelloRuntimeService {
     );
   }
 
+  /**
+   * Bare start_stream (grab-mode hammer). Resolves the new stream id.
+   * options.sampleRate: Opus rate for the stream (DJ mode); default 16 kHz.
+   */
+  requestStartStream(options = {}) {
+    if (this.anonymousListen || this.state.anonymousListen) {
+      return Promise.reject(
+        new Error(
+          'Anonymous listen mode cannot transmit. Turn it off on Live and reconnect.'
+        )
+      );
+    }
+    if (this.state.status !== 'connected') {
+      return Promise.reject(new Error('Zello is not connected.'));
+    }
+    const channelName =
+      this.state.channelName ||
+      this.settingsStore.read().zello.channelName;
+    const rate = OPUS_RATES.includes(Number(options.sampleRate))
+      ? Number(options.sampleRate)
+      : 0;
+    return this.requestCommand({
+      command: 'start_stream',
+      channel: channelName,
+      type: 'audio',
+      codec: 'opus',
+      codec_header: rate
+        ? this.createOutputCodecHeader(rate, OUTPUT_FRAME_DURATION_MS)
+        : this.createOutputCodecHeader(),
+      packet_duration: OUTPUT_FRAME_DURATION_MS
+    }).then((response) => {
+      if (!Number.isInteger(response.stream_id)) {
+        throw new Error('Zello did not return an outgoing stream ID.');
+      }
+      return response.stream_id;
+    });
+  }
+
+  /** Let go of a stream we won but no longer want. */
+  releaseStreamId(streamId) {
+    const channelName =
+      this.state.channelName ||
+      this.settingsStore.read().zello.channelName;
+    return this.requestCommand({
+      command: 'stop_stream',
+      stream_id: streamId,
+      channel: channelName
+    }).catch(() => {});
+  }
+
   async sendPcmAudio(
-    pcmBuffer
+    pcmBuffer,
+    options = {}
   ) {
     if (
       !Buffer.isBuffer(pcmBuffer) ||
@@ -1081,7 +1340,7 @@ class ZelloRuntimeService {
 
     return this.sendPcmHoldingWhile(
       async () => pcmBuffer,
-      { holdSilence: false }
+      { holdSilence: false, fastStop: options.fastStop === true }
     );
   }
 
@@ -1093,6 +1352,11 @@ class ZelloRuntimeService {
     producePcm,
     options = {}
   ) {
+    if (this.anonymousListen || this.state.anonymousListen) {
+      throw new Error(
+        'Anonymous listen mode cannot transmit. Turn it off on Live and reconnect.'
+      );
+    }
     const holdSilence = options.holdSilence !== false;
     const maxHoldMs = Math.min(
       90000,
@@ -1111,23 +1375,17 @@ class ZelloRuntimeService {
       );
     }
 
-    if (
-      this.state.channelStatus !==
-        'online'
-    ) {
-      throw new Error(
-        'Zello channel is not ready.'
-      );
-    }
-
-    const settings =
-      this.settingsStore.read();
-
+    // channelStatus can be stale while the socket still works; Zello's
+    // start_stream reply decides whether transmit is possible.
+    // Each bot transmits on the channel it joined, not the global default.
     const channelName =
-      settings.zello.channelName;
+      this.state.channelName ||
+      this.settingsStore.read().zello.channelName;
 
-    const startResponse =
-      await this.requestCommand({
+    // Grab mode may hand over a stream it already won
+    const startResponse = Number.isInteger(options.streamId)
+      ? { stream_id: options.streamId }
+      : await this.requestCommand({
         command:
           'start_stream',
 
@@ -1159,6 +1417,20 @@ class ZelloRuntimeService {
 
     const streamId =
       startResponse.stream_id;
+
+    // Grab floor: stop holding the moment Zello shows the button went to someone else
+    const abortOnFloorLoss = options.abortOnFloorLoss === true;
+    const watch = { streamId, lost: null };
+    this.outgoing = watch;
+    let floorLost = null;
+
+    if (typeof options.onStarted === 'function') {
+      try {
+        options.onStarted(streamId);
+      } catch {
+        /* ignore */
+      }
+    }
 
     const encoder =
       new OpusScript(
@@ -1253,6 +1525,13 @@ class ZelloRuntimeService {
       Math.max(400, Number(options.maxFillerMs) || 2500)
     );
 
+    const shouldRelease =
+      typeof options.shouldRelease === 'function'
+        ? options.shouldRelease
+        : null;
+    let released = false;
+    let streamStopped = false;
+
     try {
       // Hold the button with spoken filler (or silence fallback) while speech builds
       if (holdSilence) {
@@ -1260,6 +1539,17 @@ class ZelloRuntimeService {
         const holdStartedAt = Date.now();
         while (!produceDone) {
           if (this.txAbortRequested) {
+            transmissionInterrupted = true;
+            break;
+          }
+          if (abortOnFloorLoss && watch.lost) {
+            floorLost = watch.lost;
+            transmissionInterrupted = true;
+            break;
+          }
+          // Another transmit on this app needs the channel — drop the hold now
+          if (shouldRelease && shouldRelease()) {
+            released = true;
             transmissionInterrupted = true;
             break;
           }
@@ -1296,17 +1586,30 @@ class ZelloRuntimeService {
           }
 
           const ok = await sendFrame(frame);
-          if (!ok) break;
+          if (!ok) {
+            if (abortOnFloorLoss) {
+              this.markFloorLost({ reason: 'disconnected', error: 'connection dropped' });
+              floorLost = watch.lost;
+            }
+            break;
+          }
         }
       }
 
-      await producePromise;
+      // Floor holds never wait out their hold window once cut short (abort / loss / release)
+      const skipProduce =
+        released ||
+        Boolean(floorLost) ||
+        (abortOnFloorLoss && transmissionInterrupted);
+      if (!skipProduce) {
+        await producePromise;
+      }
 
       if (this.txAbortRequested) {
         transmissionInterrupted = true;
       }
 
-      if (produceError) {
+      if (produceError && !skipProduce) {
         throw produceError;
       }
 
@@ -1321,6 +1624,11 @@ class ZelloRuntimeService {
           offset += OUTPUT_FRAME_BYTES
         ) {
           if (this.txAbortRequested) {
+            transmissionInterrupted = true;
+            break;
+          }
+          if (abortOnFloorLoss && watch.lost) {
+            floorLost = watch.lost;
             transmissionInterrupted = true;
             break;
           }
@@ -1346,16 +1654,30 @@ class ZelloRuntimeService {
         this.audioPipelineService.setOutputLevel(0);
       }
 
-      try {
-        await this.requestCommand({
+      streamStopped = true;
+      const stopping = this.requestCommand({
+        command: 'stop_stream',
+        stream_id: streamId,
+        channel: channelName
+      }).catch(() => {
+        // Zello documents stop failures as safe to ignore.
+      });
+      // Re-grabbing callers queue their next start_stream right behind this stop
+      if (!floorLost && options.fastStop !== true) {
+        await stopping;
+      }
+    } finally {
+      if (this.outgoing === watch) {
+        this.outgoing = null;
+      }
+      if (!streamStopped) {
+        // Errored mid-hold — still let go of the button on Zello's side
+        this.requestCommand({
           command: 'stop_stream',
           stream_id: streamId,
           channel: channelName
-        });
-      } catch {
-        // Zello documents stop failures as safe to ignore.
+        }).catch(() => {});
       }
-    } finally {
       try {
         encoder.delete();
       } catch {
@@ -1373,7 +1695,184 @@ class ZelloRuntimeService {
       success: true,
       streamId,
       interrupted: transmissionInterrupted === true,
-      held: holdSilence === true
+      released,
+      held: holdSilence === true,
+      floorLost,
+      lostSignal: watch.lost
+    };
+  }
+
+  /**
+   * Push-to-talk stream fed while it runs. feed.take() returns the next
+   * 20 ms PCM frame or null (silence is sent to keep timing); feed.isFinished()
+   * ends the stream. options.maxMs caps the transmission.
+   *
+   * DJ mode extras: options.streamId (a stream already won), sampleRate
+   * (Opus rate, frames are 20 ms at that rate), music (Opus AUDIO mode),
+   * bitrate, abortOnFloorLoss, shouldRelease(), fastStop.
+   */
+  async sendPcmLive(feed, options = {}) {
+    if (this.anonymousListen || this.state.anonymousListen) {
+      throw new Error(
+        'Anonymous listen mode cannot transmit. Turn it off on Live and reconnect.'
+      );
+    }
+    if (this.state.status !== 'connected') {
+      throw new Error('Zello is not connected.');
+    }
+    const maxMs = Math.min(120000, Math.max(1000, Number(options.maxMs) || 60000));
+    const channelName =
+      this.state.channelName ||
+      this.settingsStore.read().zello.channelName;
+    const sampleRate = OPUS_RATES.includes(Number(options.sampleRate))
+      ? Number(options.sampleRate)
+      : OUTPUT_SAMPLE_RATE;
+    const customRate = sampleRate !== OUTPUT_SAMPLE_RATE;
+    const frameSamples = (sampleRate * OUTPUT_FRAME_DURATION_MS) / 1000;
+    const frameBytes = frameSamples * 2;
+
+    const startResponse = Number.isInteger(options.streamId)
+      ? { stream_id: options.streamId }
+      : await this.requestCommand({
+        command: 'start_stream',
+        channel: channelName,
+        type: 'audio',
+        codec: 'opus',
+        codec_header: customRate
+          ? this.createOutputCodecHeader(sampleRate, OUTPUT_FRAME_DURATION_MS)
+          : this.createOutputCodecHeader(),
+        packet_duration: OUTPUT_FRAME_DURATION_MS
+      });
+    if (!Number.isInteger(startResponse.stream_id)) {
+      throw new Error('Zello did not return an outgoing stream ID.');
+    }
+    const streamId = startResponse.stream_id;
+
+    const abortOnFloorLoss = options.abortOnFloorLoss === true;
+    const watch = { streamId, lost: null };
+    if (abortOnFloorLoss) this.outgoing = watch;
+    const shouldRelease =
+      typeof options.shouldRelease === 'function' ? options.shouldRelease : null;
+
+    if (typeof options.onStarted === 'function') {
+      try {
+        options.onStarted(streamId);
+      } catch {
+        /* ignore */
+      }
+    }
+
+    const encoder = new OpusScript(
+      sampleRate,
+      1,
+      options.music === true ? OpusScript.Application.AUDIO : OpusScript.Application.VOIP
+    );
+    if (Number(options.bitrate) > 0) {
+      try {
+        encoder.setBitrate(Math.round(Number(options.bitrate)));
+      } catch {
+        // Keep the encoder default.
+      }
+    }
+    const socket = this.socket;
+    const silence = Buffer.alloc(frameBytes);
+    const startedAt = Date.now();
+    let frames = 0;
+    let voiced = 0;
+    let interrupted = false;
+    let capped = false;
+    let released = false;
+    let floorLost = null;
+
+    this.txAbortRequested = false;
+    this.setState({ transmitting: true });
+
+    try {
+      while (!feed.isFinished()) {
+        if (this.txAbortRequested) {
+          interrupted = true;
+          break;
+        }
+        if (abortOnFloorLoss && watch.lost) {
+          floorLost = watch.lost;
+          interrupted = true;
+          break;
+        }
+        if (shouldRelease && shouldRelease()) {
+          released = true;
+          break;
+        }
+        if (Date.now() - startedAt >= maxMs) {
+          capped = true;
+          break;
+        }
+        if (!this.socket || this.socket !== socket || socket.readyState !== WebSocket.OPEN) {
+          interrupted = true;
+          if (abortOnFloorLoss) {
+            this.markFloorLost({ reason: 'disconnected', error: 'connection dropped' });
+            floorLost = watch.lost;
+          }
+          break;
+        }
+
+        let frame = feed.take();
+        if (frame && frame.length) {
+          voiced += 1;
+          if (frame.length < frameBytes) {
+            const padded = Buffer.alloc(frameBytes);
+            frame.copy(padded, 0);
+            frame = padded;
+          }
+        } else {
+          frame = silence;
+        }
+        this.audioPipelineService?.setOutputPcmLevel?.(frame);
+
+        const encoded = Buffer.from(encoder.encode(frame, frameSamples));
+        const packet = Buffer.alloc(9 + encoded.length);
+        packet.writeUInt8(0x01, 0);
+        packet.writeUInt32BE(streamId, 1);
+        packet.writeUInt32BE(0, 5);
+        encoded.copy(packet, 9);
+        socket.send(packet, { binary: true });
+        frames += 1;
+
+        const waitMs = startedAt + frames * OUTPUT_FRAME_DURATION_MS - Date.now();
+        if (waitMs > 0) {
+          await new Promise((resolve) => setTimeout(resolve, waitMs));
+        }
+      }
+    } finally {
+      if (this.outgoing === watch) this.outgoing = null;
+      this.audioPipelineService?.setOutputLevel?.(0);
+      const stopping = this.requestCommand({
+        command: 'stop_stream',
+        stream_id: streamId,
+        channel: channelName
+      }).catch(() => {
+        // Zello documents stop failures as safe to ignore.
+      });
+      // A re-grab queues its start_stream right behind this stop
+      if (options.fastStop !== true && !floorLost) await stopping;
+      try {
+        encoder.delete();
+      } catch {
+        // Ignore Opus cleanup failure.
+      }
+      this.txAbortRequested = false;
+      this.setState({ transmitting: false });
+    }
+
+    return {
+      success: true,
+      streamId,
+      interrupted,
+      capped,
+      released,
+      floorLost,
+      framesSent: frames,
+      voicedFrames: voiced,
+      durationMs: frames * OUTPUT_FRAME_DURATION_MS
     };
   }
 

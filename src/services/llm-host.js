@@ -159,8 +159,9 @@ function pickFallbackModel(available) {
   const pool = chatPrefer.length ? chatPrefer : list;
 
   return (
-    pool.find((n) => /llama3\.2/i.test(n)) ||
+    pool.find((n) => /uncensored|abliterated|dolphin/i.test(n)) ||
     pool.find((n) => /wizard-vicuna/i.test(n)) ||
+    pool.find((n) => /llama3\.2/i.test(n)) ||
     pool.find((n) => /llama/i.test(n)) ||
     pool.find((n) => /gemma/i.test(n)) ||
     pool.find((n) => /qwen/i.test(n)) ||
@@ -310,6 +311,80 @@ async function getBrainSnapshot(ai = {}, options = {}) {
   };
 }
 
+function isChatPickerModel(row) {
+  const name = String(row && row.name ? row.name : '');
+  const family = String(
+    (row && row.details && row.details.family) || ''
+  );
+  return (
+    Boolean(name) &&
+    !/vl\b|vision|moondream|llava/i.test(name) &&
+    !/embed/i.test(name) &&
+    !/bert/i.test(family)
+  );
+}
+
+async function fetchOllamaTags(baseUrl, timeoutMs = 4000) {
+  const base = trimBase(baseUrl);
+  if (!base) {
+    return null;
+  }
+  try {
+    const res = await fetch(base + '/api/tags', {
+      signal: AbortSignal.timeout(timeoutMs)
+    });
+    if (!res.ok) {
+      return null;
+    }
+    const data = await res.json();
+    return Array.isArray(data.models) ? data.models : [];
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Uncached chat-model list for the Engines model picker.
+ * Hides vision (settings-store rejects /vl\b/) and embedding models.
+ */
+async function listBrainModels(ai = {}) {
+  const m = migrateAi(ai);
+  const hosts =
+    m.llmHostMode === 'auto'
+      ? ['other-pc', 'this-pc']
+      : [m.llmHostMode];
+
+  let llmHost = hosts[0];
+  let rows = null;
+  for (const host of hosts) {
+    rows = await fetchOllamaTags(resolveOllamaUrlForHost(m, host));
+    if (rows) {
+      llmHost = host;
+      break;
+    }
+  }
+
+  const all = rows || [];
+  const models = all
+    .filter(isChatPickerModel)
+    .map((row) => ({
+      name: String(row.name).trim(),
+      size: Number(row.size) || 0
+    }))
+    .sort((a, b) =>
+      a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
+    );
+
+  return {
+    llmHost,
+    hostLabel: hostLabel(llmHost),
+    ollamaUrl: resolveOllamaUrlForHost(m, llmHost),
+    reachable: rows !== null,
+    hidden: all.length - models.length,
+    models
+  };
+}
+
 function clearLlmHostCache() {
   probeCache.clear();
   modelsCache.clear();
@@ -327,6 +402,7 @@ module.exports = {
   pickFallbackModel,
   resolveChatModel,
   getBrainSnapshot,
+  listBrainModels,
   hostLabel,
   clearLlmHostCache
 };

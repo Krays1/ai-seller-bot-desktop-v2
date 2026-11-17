@@ -14,8 +14,8 @@ if not defined YOUTUBE_MAX_DURATION_SEC set "YOUTUBE_MAX_DURATION_SEC=300"
 if not defined YOUTUBE_INTERRUPT_GRACE_MS set "YOUTUBE_INTERRUPT_GRACE_MS=0"
 
 REM YouTube music (already installed on this PC — wire absolute paths for Electron)
-if not defined YT_DLP_PATH if exist "%LocalAppData%\Programs\Python\Python310\Scripts\yt-dlp.exe" (
-  set "YT_DLP_PATH=%LocalAppData%\Programs\Python\Python310\Scripts\yt-dlp.exe"
+if not defined YT_DLP_PATH if exist "%AppData%\Python\Python314\Scripts\yt-dlp.exe" (
+  set "YT_DLP_PATH=%AppData%\Python\Python314\Scripts\yt-dlp.exe"
 )
 if not defined FFMPEG_PATH (
   for /f "delims=" %%I in ('where ffmpeg 2^>nul') do (

@@ -7,7 +7,9 @@ const DEFAULT_SETTINGS = Object.freeze({
     channelNames: [],
     botUsername: '',
     password: '',
-    token: ''
+    token: '',
+    // F&F only: logon with JWT alone (no username/password), listen_only
+    anonymousListen: false
   },
 
   ai: {
@@ -15,7 +17,7 @@ const DEFAULT_SETTINGS = Object.freeze({
     ollamaUrlThisPc: 'http://127.0.0.1:11434',
     ollamaUrlOtherPc: 'http://192.168.1.92:11434',
     llmHostMode: 'other-pc',
-    model: 'llama3.2',
+    model: 'wizard-vicuna-uncensored:7b',
     identityName: 'Bot',
     autoReply: true,
     behaviorMode: 'banter'
@@ -55,6 +57,9 @@ const DEFAULT_SETTINGS = Object.freeze({
     botSpeakTargetSec: 12,
     memoryDepth: 24,
     interruptReset: true,
+    grabMode: false,
+    grabOnly: false,
+    constantBotId: '',
     nameCallQuietMs: 45000
   },
 
@@ -79,6 +84,46 @@ const DEFAULT_SETTINGS = Object.freeze({
     model: 'qwen2.5vl:3b',
     maxChars: 280,
     timeoutMs: 90000
+  },
+
+  // Live mic → character voice → chosen bot (Voice Changer tab)
+  voiceChanger: {
+    botId: '',
+    voice: 'dsp:robot',
+    mode: 'live',
+    deviceId: '',
+    pttKey: 'Space',
+    test: false,
+    converterUrl: 'http://127.0.0.1:8003',
+    diffusionSteps: 0,
+    blockMs: 0
+  },
+
+  // Live tab DJ mode (the ON/OFF state itself is never saved)
+  dj: {
+    botId: '',
+    source: 'device',
+    deviceId: '',
+    sampleRate: 24000,
+    musicVolume: 80,
+    duckLevel: 20,
+    voiceVolume: 100,
+    voice: '',
+    // Live hold-to-talk over music (Seed-VC / DSP) — separate from typed TTS voice
+    vcMode: 'live',
+    vcVoice: 'dsp:robot',
+    vcDeviceId: '',
+    djName: '',
+    introLine: '',
+    refreshSec: 50,
+    quickLines: [
+      "You're locked in to the live mix — keep it here.",
+      'That one goes out to everybody on the channel tonight.',
+      'Requests are open — just say play and the song name.',
+      'Turn it up! More music coming right up.',
+      'Big shout out to everyone listening.',
+      'Stay tuned, the next one is a banger.'
+    ]
   }
 });
 
@@ -196,7 +241,7 @@ class SettingsStore {
       !requestedModel ||
       requestedModel === 'gpt-5.6-luna' ||
       /vl\b/i.test(requestedModel)
-        ? 'llama3.2'
+        ? 'wizard-vicuna-uncensored:7b'
         : requestedModel;
 
     const speedNumber =
@@ -286,7 +331,9 @@ class SettingsStore {
         token: this.cleanSecret(
           zello.token,
           4000
-        )
+        ),
+
+        anonymousListen: zello.anonymousListen === true
       },
 
       ai: {
@@ -363,6 +410,9 @@ class SettingsStore {
               )
             : 6,
 
+        autoCaptureVoices: speech.autoCaptureVoices === true,
+        autoSwitchToNewVoice: speech.autoSwitchToNewVoice === true,
+
         voicesDir
       },
 
@@ -389,7 +439,82 @@ class SettingsStore {
 
       imageGen: this.sanitizeImageGen(input.imageGen),
 
-      vision: this.sanitizeVision(input.vision)
+      vision: this.sanitizeVision(input.vision),
+
+      voiceChanger: this.sanitizeVoiceChanger(input.voiceChanger),
+
+      dj: this.sanitizeDj(input.dj)
+    };
+  }
+
+  sanitizeDj(raw) {
+    const input =
+      raw && typeof raw === 'object' ? raw : {};
+    const defaults = DEFAULT_SETTINGS.dj;
+    const pct = (value, max, fallback) => {
+      const n = Math.round(Number(value));
+      return Number.isFinite(n) ? Math.min(max, Math.max(0, n)) : fallback;
+    };
+    const lines = Array.isArray(input.quickLines)
+      ? input.quickLines
+      : defaults.quickLines;
+    const quickLines = [];
+    for (let i = 0; i < 6; i += 1) {
+      quickLines.push(
+        typeof lines[i] === 'string'
+          ? lines[i].replace(/\s+/g, ' ').trim().slice(0, 300)
+          : ''
+      );
+    }
+    const refresh = Math.round(Number(input.refreshSec));
+    return {
+      botId: this.cleanText(input.botId, 80),
+      source: ['device', 'system', 'app'].includes(input.source)
+        ? input.source
+        : defaults.source,
+      deviceId: this.cleanText(input.deviceId, 300),
+      sampleRate: [16000, 24000, 48000].includes(Number(input.sampleRate))
+        ? Number(input.sampleRate)
+        : defaults.sampleRate,
+      musicVolume: pct(input.musicVolume, 150, defaults.musicVolume),
+      duckLevel: pct(input.duckLevel, 100, defaults.duckLevel),
+      voiceVolume: pct(input.voiceVolume, 150, defaults.voiceVolume),
+      voice: this.cleanText(input.voice, 500),
+      vcMode: input.vcMode === 'repeat' ? 'repeat' : 'live',
+      vcVoice: this.cleanText(input.vcVoice, 500) || defaults.vcVoice,
+      vcDeviceId: this.cleanText(input.vcDeviceId, 300),
+      djName: this.cleanText(input.djName, 80),
+      introLine: this.cleanText(input.introLine, 300),
+      // Keep under the channel's max message length
+      refreshSec:
+        Number.isFinite(refresh) && refresh >= 10 && refresh <= 85
+          ? refresh
+          : defaults.refreshSec,
+      quickLines
+    };
+  }
+
+  sanitizeVoiceChanger(raw) {
+    const input =
+      raw && typeof raw === 'object' ? raw : {};
+    const defaults = DEFAULT_SETTINGS.voiceChanger;
+    const intIn = (value, min, max) => {
+      const n = Math.round(Number(value));
+      return Number.isFinite(n) && n >= min && n <= max ? n : 0;
+    };
+    return {
+      botId: this.cleanText(input.botId, 80),
+      voice: this.cleanText(input.voice, 300) || defaults.voice,
+      mode: input.mode === 'repeat' ? 'repeat' : 'live',
+      deviceId: this.cleanText(input.deviceId, 300),
+      pttKey: this.cleanText(input.pttKey, 40) || defaults.pttKey,
+      test: input.test === true,
+      converterUrl:
+        this.cleanText(input.converterUrl, 300) ||
+        defaults.converterUrl,
+      // 0 = server default
+      diffusionSteps: intIn(input.diffusionSteps, 1, 30),
+      blockMs: intIn(input.blockMs, 80, 1000)
     };
   }
 
@@ -635,7 +760,7 @@ class SettingsStore {
       ),
       cutInWhenCapped: input.cutInWhenCapped !== false,
       botSpeakTargetSec: Math.min(
-        45,
+        90,
         Math.max(
           5,
           Math.round(
@@ -657,6 +782,14 @@ class SettingsStore {
         )
       ),
       interruptReset: input.interruptReset !== false,
+      grabMode: input.grabMode === true,
+      // Grab the button but never reply — hold briefly with silence, then let go
+      grabOnly: input.grabMode === true && input.grabOnly === true,
+      // Live tab "Constant requests" bot (the ON/OFF toggle itself is never saved)
+      constantBotId:
+        input.constantBotId === undefined || input.constantBotId === null
+          ? ''
+          : String(input.constantBotId).trim().slice(0, 64),
       // After a name-call conversation, silence this long ends engagement
       nameCallQuietMs: Math.min(
         180000,

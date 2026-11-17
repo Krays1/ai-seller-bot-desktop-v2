@@ -1,4 +1,12 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const {
+  app,
+  BrowserWindow,
+  ipcMain,
+  shell,
+  session,
+  desktopCapturer,
+  dialog
+} = require('electron');
 const path = require('node:path');
 
 // Product display name; keep userData path so existing settings stay put
@@ -14,6 +22,9 @@ const { LeadStore } = require('../services/lead-store');
 const { MultiBotRuntime } = require('../services/multi-bot-runtime');
 const { AudioPipelineService } = require('../services/audio-pipeline-service');
 const { VoiceBotService } = require('../services/voice-bot-service');
+const { ZelloTokenMinter } = require('../services/zello-token-minter');
+const { VoiceChangerService } = require('../services/voice-changer-service');
+const { DjService } = require('../services/dj-service');
 const os = require('node:os');
 const { execFile } = require('node:child_process');
 const { promisify } = require('node:util');
@@ -301,8 +312,74 @@ let leadStore = null;
 let zelloRuntimeService = null;
 let audioPipelineService = null;
 let voiceBotService = null;
+let voiceChangerService = null;
+let djService = null;
 /** Serialize settings saves so rapid Join toggles don't race connect/disconnect. */
 let settingsSaveQueue = Promise.resolve();
+let tokenMinter = null;
+const TOKEN_RENEW_INTERVAL_MS = 6 * 60 * 60 * 1000;
+
+function renewZelloTokens() {
+  const run = async () => {
+    let renewed = [];
+    try {
+      renewed = tokenMinter.renewBotTokens(settingsStore);
+    } catch (err) {
+      voiceBotService?.logActivity(
+        'Tokens',
+        'Could not make new Zello tokens: ' + (err?.message || err)
+      );
+      return;
+    }
+    if (!renewed.length) return;
+    voiceBotService?.logActivity(
+      'Tokens',
+      'Made fresh Zello tokens for ' + renewed.length + ' bot(s): ' + renewed.join(', ')
+    );
+    try {
+      await zelloRuntimeService?.syncRosterConnections({
+        forceReconnectMismatch: true
+      });
+    } catch {
+      /* ignore hot-sync errors while idle/disconnected */
+    }
+  };
+  const queued = settingsSaveQueue.then(run, run);
+  settingsSaveQueue = queued.catch(() => {});
+  return queued;
+}
+
+function zelloTokenExpiry(token) {
+  try {
+    const payload = JSON.parse(
+      Buffer.from(String(token).split('.')[1], 'base64url').toString('utf8')
+    );
+    return Number(payload.exp) || 0;
+  } catch {
+    return 0;
+  }
+}
+
+/**
+ * The renderer saves its in-memory copy, which can hold tokens older than
+ * ones updated on disk meanwhile — never swap a token for one expiring sooner.
+ */
+function keepNewestBotTokens(incoming, onDisk) {
+  if (!Array.isArray(incoming?.bots) || !Array.isArray(onDisk?.bots)) {
+    return incoming;
+  }
+  const diskById = new Map(onDisk.bots.map((b) => [String(b?.id), b]));
+  return {
+    ...incoming,
+    bots: incoming.bots.map((bot) => {
+      const disk = diskById.get(String(bot?.id));
+      if (!disk || !disk.token || disk.token === bot?.token) return bot;
+      return zelloTokenExpiry(disk.token) > zelloTokenExpiry(bot?.token)
+        ? { ...bot, token: disk.token }
+        : bot;
+    })
+  };
+}
 
 function botsConnectionFingerprint(settings) {
   const bots = Array.isArray(settings?.bots) ? settings.bots : [];
@@ -368,7 +445,7 @@ function registerIpcHandlers() {
     const run = async () => {
       const before = settingsStore.read();
       const beforeFp = botsConnectionFingerprint(before);
-      const result = settingsStore.write(settings);
+      const result = settingsStore.write(keepNewestBotTokens(settings, before));
       const afterFp = botsConnectionFingerprint(result);
 
       if (
@@ -392,6 +469,18 @@ function registerIpcHandlers() {
           });
         } catch {
           /* ignore hot-sync errors while idle/disconnected */
+        }
+      }
+
+      // Grab-only toggle doesn't change the connection fingerprint, so sync it explicitly
+      if (
+        zelloRuntimeService &&
+        typeof zelloRuntimeService.syncGrabFloor === 'function'
+      ) {
+        try {
+          zelloRuntimeService.syncGrabFloor();
+        } catch {
+          /* ignore */
         }
       }
 
@@ -474,6 +563,10 @@ function registerIpcHandlers() {
     return zelloRuntimeService.disconnect();
   });
 
+  ipcMain.handle('zello:constant-requests', async (_event, payload) => {
+    return zelloRuntimeService.setConstantRequests(payload || {});
+  });
+
   ipcMain.handle('audio:status', () => {
     return audioPipelineService.getStatus();
   });
@@ -521,6 +614,20 @@ function registerIpcHandlers() {
     return getBrainSnapshot(settings.ai || {}, options || {});
   });
 
+  ipcMain.handle('llm:models', async (_event, options) => {
+    const {
+      listBrainModels
+    } = require('../services/llm-host');
+
+    const settings = settingsStore.read();
+    const draft = (options && options.ai) || {};
+    const ai = { ...(settings.ai || {}) };
+    for (const key of ['llmHostMode', 'ollamaUrlThisPc', 'ollamaUrlOtherPc']) {
+      if (typeof draft[key] === 'string') ai[key] = draft[key];
+    }
+    return listBrainModels(ai);
+  });
+
   ipcMain.handle('llm:clear-cache', async () => {
     const {
       clearLlmHostCache
@@ -532,6 +639,106 @@ function registerIpcHandlers() {
   ipcMain.handle('system:status', async () => {
     return getSystemStatus();
   });
+
+  ipcMain.handle('voice-changer:info', () => voiceChangerService.info());
+
+  ipcMain.handle('voice-changer:health', () => voiceChangerService.health());
+
+  ipcMain.handle('voice-changer:start', (_event, opts) =>
+    voiceChangerService.start(opts || {})
+  );
+
+  ipcMain.on('voice-changer:pcm', (_event, sessionId, data) => {
+    voiceChangerService.pushPcm(sessionId, data);
+  });
+
+  ipcMain.handle('voice-changer:stop', (_event, sessionId) =>
+    voiceChangerService.stop(sessionId)
+  );
+
+  ipcMain.handle('voice-changer:save-prefs', (_event, prefs) => {
+    const run = () => voiceChangerService.savePrefs(prefs || {});
+    const queued = settingsSaveQueue.then(run, run);
+    settingsSaveQueue = queued.catch(() => {});
+    return queued;
+  });
+
+  ipcMain.handle('voice-changer:open-folder', () =>
+    shell.openPath(voiceChangerService.voicesDir)
+  );
+
+  ipcMain.handle('dj:info', (_event, opts) => djService.info(opts || {}));
+
+  ipcMain.handle('dj:status', () => djService.status());
+
+  ipcMain.handle('dj:start', (_event, opts) => djService.start(opts || {}));
+
+  ipcMain.handle('dj:stop', () => djService.stop());
+
+  ipcMain.on('dj:pcm', (_event, sessionId, data) => {
+    djService.pushPcm(sessionId, data);
+  });
+
+  ipcMain.handle('dj:set-source', (_event, source) => djService.setSource(String(source || '')));
+
+  ipcMain.handle('dj:say', (_event, payload) => djService.say(payload || {}));
+
+  ipcMain.handle('dj:cancel-line', (_event, id) => djService.cancelLine(id));
+
+  ipcMain.handle('dj:save-prefs', (_event, prefs) => {
+    const run = () => djService.savePrefs(prefs || {});
+    const queued = settingsSaveQueue.then(run, run);
+    settingsSaveQueue = queued.catch(() => {});
+    return queued;
+  });
+
+  ipcMain.handle('dj:add-song', (_event, query) => djService.addSong({ query }));
+
+  ipcMain.handle('dj:add-file', async () => {
+    const picked = await dialog.showOpenDialog(mainWindow, {
+      title: 'Add music to the DJ queue',
+      properties: ['openFile', 'multiSelections'],
+      filters: [
+        { name: 'Audio', extensions: ['mp3', 'wav', 'm4a', 'flac', 'ogg', 'opus', 'aac', 'webm', 'mp4'] }
+      ]
+    });
+    if (picked.canceled) return { ok: false, canceled: true };
+    const added = picked.filePaths.map((p) => djService.addFile(p).title);
+    return { ok: true, added };
+  });
+
+  ipcMain.handle('dj:skip', () => djService.skip());
+}
+
+/**
+ * DJ "Whole PC sound": getDisplayMedia in the renderer gets Windows'
+ * system-audio loopback (video is required by Chromium and dropped there).
+ */
+function registerSystemAudioCapture() {
+  session.defaultSession.setDisplayMediaRequestHandler((_request, callback) => {
+    desktopCapturer
+      .getSources({ types: ['screen'] })
+      .then((sources) => {
+        if (!sources.length || process.platform !== 'win32') {
+          callback({});
+          return;
+        }
+        callback({ video: sources[0], audio: 'loopback' });
+      })
+      .catch(() => callback({}));
+  });
+}
+
+function sendToRenderer(channel, payload) {
+  if (
+    !mainWindow ||
+    mainWindow.isDestroyed() ||
+    !mainWindow.webContents ||
+    mainWindow.webContents.isDestroyed()
+  ) {
+    return;
+  }
+  mainWindow.webContents.send(channel, payload);
 }
 
 app.whenReady().then(() => {
@@ -600,6 +807,12 @@ app.whenReady().then(() => {
     });
   }
 
+  if (typeof zelloRuntimeService.setGrabLogger === 'function') {
+    zelloRuntimeService.setGrabLogger((message) =>
+      voiceBotService.logActivity('Grab', message)
+    );
+  }
+
   audioPipelineService
     .setCompletedHandler(
       (stream) =>
@@ -607,6 +820,14 @@ app.whenReady().then(() => {
           .handleCompletedStream(
             stream
           )
+          .finally(() => {
+            if (
+              typeof zelloRuntimeService?.releaseUnclaimedPreGrab ===
+              'function'
+            ) {
+              zelloRuntimeService.releaseUnclaimedPreGrab(stream?.stoppedAt);
+            }
+          })
     );
 
   if (
@@ -614,6 +835,8 @@ app.whenReady().then(() => {
     'function'
   ) {
     audioPipelineService.setStreamStartHandler((info) => {
+      // DJ mode's own stream restarts every refresh — not worth a log line each time
+      if (zelloRuntimeService.isDjSpeaker?.(info?.from)) return;
       const who = info?.from || 'someone';
       const ch = info?.channel ? ' on ' + info.channel : '';
       voiceBotService.logActivity(
@@ -641,7 +864,33 @@ app.whenReady().then(() => {
     );
   }
 
+  voiceChangerService = new VoiceChangerService({
+    settingsStore,
+    zelloRuntimeService,
+    voiceBotService,
+    appRoot: path.join(__dirname, '..', '..'),
+    userDataPath: app.getPath('userData')
+  });
+  voiceChangerService.setStatusListener((status) =>
+    sendToRenderer('voice-changer:status', status)
+  );
+  voiceChangerService.setOutputListener((pcm) =>
+    sendToRenderer('voice-changer:output', pcm)
+  );
+
+  djService = new DjService({
+    settingsStore,
+    zelloRuntimeService,
+    voiceBotService
+  });
+  djService.setStatusListener((status) => sendToRenderer('dj:status', status));
+
+  tokenMinter = new ZelloTokenMinter(app.getPath('userData'));
+  renewZelloTokens();
+  setInterval(renewZelloTokens, TOKEN_RENEW_INTERVAL_MS);
+
   registerIpcHandlers();
+  registerSystemAudioCapture();
   createMainWindow();
 
   // Warm STT / OmniVoice / Other PC brain in background

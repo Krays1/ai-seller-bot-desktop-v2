@@ -3,6 +3,77 @@ window.V2 = window.V2 || {};
 (function () {
   const $ = window.V2.$;
 
+  /** @type {{ reachable: boolean, models: { name: string, size: number }[] } | null} */
+  let modelList = null;
+  let modelLoadSeq = 0;
+
+  function formatSize(bytes) {
+    if (!bytes) return '';
+    return bytes >= 1e9
+      ? (bytes / 1e9).toFixed(1) + ' GB'
+      : Math.round(bytes / 1e6) + ' MB';
+  }
+
+  function renderModelOptions(selected) {
+    const sel = $('ollama-model');
+    if (!sel) return;
+    const models = modelList?.reachable ? modelList.models : [];
+    let want = String(selected || '').trim();
+    if (want && !want.includes(':') && models.some((m) => m.name === want + ':latest')) {
+      want += ':latest';
+    }
+    sel.innerHTML = '';
+
+    for (const m of models) {
+      const opt = document.createElement('option');
+      opt.value = m.name;
+      const size = formatSize(m.size);
+      opt.textContent = size ? m.name + ' (' + size + ')' : m.name;
+      sel.appendChild(opt);
+    }
+
+    if (!models.some((m) => m.name === want)) {
+      const opt = document.createElement('option');
+      opt.value = want;
+      if (!modelList) opt.textContent = want || '(loading…)';
+      else if (!modelList.reachable) opt.textContent = (want || '(no model)') + ' (host offline)';
+      else opt.textContent = (want || '(no model)') + ' (not installed)';
+      sel.insertBefore(opt, sel.firstChild);
+    }
+    sel.value = want;
+  }
+
+  async function loadModels() {
+    const status = $('ollama-model-status');
+    if (!window.zelloBot?.llm?.models) return;
+    const seq = ++modelLoadSeq;
+    if (status) status.textContent = 'Loading models…';
+    let result;
+    try {
+      result = await window.zelloBot.llm.models({
+        ai: {
+          llmHostMode: $('llm-host-mode')?.value || 'other-pc',
+          ollamaUrlThisPc: $('ollama-url-this')?.value?.trim() || '',
+          ollamaUrlOtherPc: $('ollama-url-other')?.value?.trim() || ''
+        }
+      });
+    } catch {
+      result = { reachable: false, models: [] };
+    }
+    if (seq !== modelLoadSeq) return;
+    modelList = {
+      reachable: result?.reachable === true,
+      models: Array.isArray(result?.models) ? result.models : []
+    };
+    renderModelOptions($('ollama-model')?.value || '');
+    if (!status) return;
+    const where = (result?.hostLabel || 'Brain') + ' · ' + (result?.ollamaUrl || '?');
+    status.textContent = modelList.reachable
+      ? where + ' · ' + modelList.models.length + ' models' +
+        (result.hidden ? ' (' + result.hidden + ' vision/embedding hidden)' : '')
+      : where + ' · host offline';
+  }
+
   function fill(settings) {
     if (!settings) return;
     const ai = settings.ai || {};
@@ -12,10 +83,13 @@ window.V2 = window.V2 || {};
     if ($('llm-host-mode')) $('llm-host-mode').value = ai.llmHostMode || 'other-pc';
     if ($('ollama-url-this')) $('ollama-url-this').value = ai.ollamaUrlThisPc || ai.ollamaUrl || '';
     if ($('ollama-url-other')) $('ollama-url-other').value = ai.ollamaUrlOtherPc || '';
-    if ($('ollama-model')) $('ollama-model').value = ai.model || '';
+    renderModelOptions(ai.model || '');
+    loadModels();
     if ($('stt-url')) $('stt-url').value = speech.sttUrl || '';
     if ($('omnivoice-url')) $('omnivoice-url').value = speech.omnivoiceUrl || '';
     if ($('omnivoice-voice')) $('omnivoice-voice').value = speech.omnivoiceVoice || '';
+    if ($('auto-capture-voices')) $('auto-capture-voices').checked = speech.autoCaptureVoices === true;
+    if ($('auto-switch-new-voice')) $('auto-switch-new-voice').checked = speech.autoSwitchToNewVoice === true;
 
     if ($('reply-mode')) $('reply-mode').value = mb.replyMode || 'random';
     if ($('max-fighters')) $('max-fighters').value = mb.maxFighters ?? 3;
@@ -54,6 +128,8 @@ window.V2 = window.V2 || {};
     next.speech.sttUrl = $('stt-url')?.value?.trim() || '';
     next.speech.omnivoiceUrl = $('omnivoice-url')?.value?.trim() || '';
     next.speech.omnivoiceVoice = $('omnivoice-voice')?.value?.trim() || '';
+    next.speech.autoCaptureVoices = $('auto-capture-voices')?.checked === true;
+    next.speech.autoSwitchToNewVoice = $('auto-switch-new-voice')?.checked === true;
 
     next.multiBot.replyMode = $('reply-mode')?.value || 'random';
     next.multiBot.maxFighters = Number($('max-fighters')?.value || 3);
@@ -155,6 +231,10 @@ window.V2 = window.V2 || {};
     $('btn-probe-brain')?.addEventListener('click', () => probeBrain());
     $('btn-probe-stt')?.addEventListener('click', () => probeStt());
     $('btn-probe-tts')?.addEventListener('click', () => probeTts());
+    $('btn-refresh-models')?.addEventListener('click', () => loadModels());
+    for (const id of ['llm-host-mode', 'ollama-url-this', 'ollama-url-other']) {
+      $(id)?.addEventListener('change', () => loadModels());
+    }
   }
 
   window.V2.engines = {
@@ -163,6 +243,7 @@ window.V2 = window.V2 || {};
     saveEngines,
     probeBrain,
     probeStt,
-    probeTts
+    probeTts,
+    loadModels
   };
 })();

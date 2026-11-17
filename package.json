@@ -7,7 +7,7 @@
         "start": "electron .",
         "dev": "electron .",
         "import": "node tools/import-from-desktop.js",
-        "check": "node --check src/main/main.js && node --check src/main/preload.js && node --check src/renderer/app.js && node --check src/renderer/ui/state.js && node --check src/renderer/ui/live.js && node --check src/renderer/ui/roster.js && node --check src/renderer/ui/channels.js && node --check src/renderer/ui/engines.js"
+        "check": "node --check src/main/main.js && node --check src/main/preload.js && node --check src/renderer/app.js && node --check src/renderer/ui/state.js && node --check src/renderer/ui/live.js && node --check src/renderer/ui/roster.js && node --check src/renderer/ui/channels.js && node --check src/renderer/ui/engines.js && node --check src/renderer/ui/voice-changer.js && node --check src/services/voice-changer-service.js && node --check src/services/voice-changer-dsp.js && node --check src/renderer/ui/dj.js && node --check src/services/dj-mixer.js && node --check src/services/dj-service.js && node --check src/services/multi-bot-runtime.js && node --check src/services/zello-runtime-service.js && node --check src/services/settings-store.js && node --check src/services/voice-bot-service.js"
     },
     "author": "",
     "license": "ISC",

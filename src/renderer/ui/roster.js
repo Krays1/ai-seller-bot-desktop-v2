@@ -102,6 +102,37 @@ window.V2 = window.V2 || {};
     return { text: 'Off', on: false };
   }
 
+  /** Zello token health from its JWT expiry, plus a logon rejection if Zello refused it. */
+  function tokenInfo(bot, hit) {
+    const err = String(hit?.lastError || '');
+    if (err && /token|auth|authori[sz]|logon|login|credential/i.test(err)) {
+      return { text: 'Rejected', cls: 'bad', title: 'Zello refused the login: ' + err };
+    }
+    const token = String(bot?.token || '').trim();
+    if (!token) return { text: 'No token', cls: 'bad', title: 'No Zello token saved for this bot' };
+    let exp = 0;
+    try {
+      const part = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+      exp = Number(JSON.parse(atob(part + '==='.slice((part.length + 3) % 4))).exp) || 0;
+    } catch {
+      return { text: 'Unreadable', cls: 'warn', title: 'Token is not a readable Zello JWT' };
+    }
+    if (!exp) return { text: 'No expiry', cls: 'warn', title: 'Token has no expiry date' };
+    const date = new Date(exp * 1000);
+    const dateText = date.toLocaleDateString([], { day: 'numeric', month: 'short' });
+    const days = Math.floor((exp * 1000 - Date.now()) / 86400000);
+    const title = 'Expires ' + date.toLocaleString();
+    if (days < 0) return { text: 'Expired ' + dateText, cls: 'bad', title };
+    if (days < 3) return { text: 'Expires ' + dateText, cls: 'warn', title };
+    return { text: 'Valid · ' + days + 'd', cls: 'on', title };
+  }
+
+  function paintTokenBadge(el, info) {
+    el.className = 'badge token-badge ' + info.cls;
+    el.textContent = info.text;
+    el.title = info.title;
+  }
+
   function updateStatuses(zelloStatus) {
     for (const row of document.querySelectorAll('#roster-body tr[data-bot-id]')) {
       const botId = row.dataset.botId;
@@ -111,7 +142,14 @@ window.V2 = window.V2 || {};
           String(b.id) === String(botId) ||
           b.username === row.querySelector('.meta')?.textContent
       );
-      const badge = row.querySelector('.badge');
+      const tokenBadge = row.querySelector('.token-badge');
+      if (tokenBadge) {
+        const bot = (window.V2.state.settings?.bots || []).find(
+          (b) => String(b.id) === String(botId)
+        );
+        paintTokenBadge(tokenBadge, tokenInfo(bot, hit));
+      }
+      const badge = row.querySelector('.badge:not(.token-badge)');
       if (!badge) continue;
       const st = String(hit?.status || '').toLowerCase();
       if (st === 'connected') {
@@ -140,7 +178,7 @@ window.V2 = window.V2 || {};
 
     if (!bots.length) {
       body.innerHTML =
-        '<tr><td colspan="7" class="hint">No bots in settings. Import or enable bots first.</td></tr>';
+        '<tr><td colspan="8" class="hint">No bots in settings. Import or enable bots first.</td></tr>';
       return;
     }
 
@@ -188,6 +226,16 @@ window.V2 = window.V2 || {};
       status.className = 'badge' + (st.on ? ' on' : '');
       status.textContent = st.text;
 
+      const tokenBadge = document.createElement('span');
+      const statusBots = zelloStatus?.bots || [];
+      paintTokenBadge(
+        tokenBadge,
+        tokenInfo(
+          bot,
+          statusBots.find?.((b) => String(b.id) === String(bot.id))
+        )
+      );
+
       const td = (node) => {
         const cell = document.createElement('td');
         cell.appendChild(node);
@@ -201,7 +249,27 @@ window.V2 = window.V2 || {};
       tr.appendChild(td(channel));
       tr.appendChild(td(voiceBtn));
       tr.appendChild(td(status));
+      tr.appendChild(td(tokenBadge));
       body.appendChild(tr);
+    }
+  }
+
+  /** Voice switched by a channel command — keep state + button in sync so Save doesn't revert it. */
+  function applyBotVoiceChange(change) {
+    const id = String(change?.botId || '');
+    if (!id) return;
+    const voice = String(change.voice || '');
+    const settings = window.V2.state.settings;
+    const bot = (settings?.bots || []).find((b) => String(b.id) === id);
+    if (bot) bot.omnivoiceVoice = voice;
+    else if (id === 'primary' && settings?.speech) settings.speech.omnivoiceVoice = voice;
+    for (const row of document.querySelectorAll('#roster-body tr[data-bot-id]')) {
+      if (row.dataset.botId !== id) continue;
+      const btn = row.querySelector('.voice-pick-btn');
+      if (btn) {
+        btn.dataset.voice = voice;
+        btn.textContent = voice || '(default)';
+      }
     }
   }
 
@@ -285,6 +353,7 @@ window.V2 = window.V2 || {};
     updateStatuses,
     saveRoster,
     readRosterIntoSettings,
+    applyBotVoiceChange,
     closeVoiceDrawer,
     applyBulkChannel
   };
