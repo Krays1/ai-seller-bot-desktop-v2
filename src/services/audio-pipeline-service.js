@@ -23,7 +23,7 @@ class AudioPipelineService {
       null;
 
     /** Cap inbound listen; 0 = no force-complete. */
-    this.maxUserTalkMs = 20000;
+    this.maxUserTalkMs = 8000;
 
     /** Stream IDs still keyed on Zello after we force-completed locally. */
     this.remoteStillKeyed = new Set();
