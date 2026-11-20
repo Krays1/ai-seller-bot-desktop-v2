@@ -52,9 +52,11 @@ const DEFAULT_SETTINGS = Object.freeze({
     peerChatChance: 0.9,
     maxFighters: 3,
     chatMode: 'banter',
-    maxUserTalkMs: 20000,
+    // Keep well under Zello's ~19–20s channel talk-cap so cut-in/regrab
+    // doesn't land on a near-cap knock-off (Downloads had no force-cap).
+    maxUserTalkMs: 8000,
     cutInWhenCapped: true,
-    botSpeakTargetSec: 12,
+    botSpeakTargetSec: 10,
     memoryDepth: 24,
     interruptReset: true,
     grabMode: false,
@@ -754,7 +756,7 @@ class SettingsStore {
           Math.round(
             Number.isFinite(Number(input.maxUserTalkMs))
               ? Number(input.maxUserTalkMs)
-              : 20000
+              : 8000
           )
         )
       ),
@@ -766,7 +768,7 @@ class SettingsStore {
           Math.round(
             Number.isFinite(Number(input.botSpeakTargetSec))
               ? Number(input.botSpeakTargetSec)
-              : 12
+              : 10
           )
         )
       ),

@@ -137,7 +137,7 @@ class VoiceBotService {
       this.settingsStore.read().multiBot || {};
     this.audioPipelineService.setListenPolicy({
       maxUserTalkMs:
-        Number(multi.maxUserTalkMs) || 20000
+        Number(multi.maxUserTalkMs) || 8000
     });
 
     if (
@@ -390,9 +390,9 @@ class VoiceBotService {
               peerChatChance: 0.9,
               maxFighters: 3,
               chatMode: 'banter',
-              maxUserTalkMs: 20000,
+              maxUserTalkMs: 8000,
               cutInWhenCapped: true,
-              botSpeakTargetSec: 12,
+              botSpeakTargetSec: 10,
               memoryDepth: 24,
               interruptReset: true
             },
@@ -5087,7 +5087,7 @@ class VoiceBotService {
         'Capped talk at ' +
           Math.round(
             (Number(config.multiBot?.maxUserTalkMs) ||
-              20000) / 1000
+              8000) / 1000
           ) +
           's from ' +
           (stream.from || 'speaker') +
